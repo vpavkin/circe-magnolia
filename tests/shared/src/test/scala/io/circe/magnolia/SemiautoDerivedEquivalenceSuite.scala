@@ -7,7 +7,7 @@ import shapeless.tag
 import shapeless.tag.@@
 import tags._
 
-class SemiautoDerivedEqualitySuite extends CirceSuite {
+class SemiautoDerivedEquivalenceSuite extends CirceSuite {
   import SemiautoDerivedSuiteInputs._
 
   object magnolia {
@@ -20,6 +20,7 @@ class SemiautoDerivedEqualitySuite extends CirceSuite {
     implicit val magnoliaEncoder7 = tag[Magnolia](deriveMagnoliaEncoder[Foo])
     implicit val magnoliaEncoder8 = tag[Magnolia](deriveMagnoliaEncoder[RecursiveAdtExample])
     implicit val magnoliaEncoder9 = tag[Magnolia](deriveMagnoliaEncoder[RecursiveWithOptionExample])
+    implicit val magnoliaEncoder1 = tag[Magnolia](deriveMagnoliaEncoder[AnyValInside])
     implicit val magnoliaEncoder5: Encoder[Seq[Foo]] @@ Magnolia = tag[Magnolia](Encoder.encodeSeq(magnoliaEncoder7))
 
 
@@ -29,6 +30,7 @@ class SemiautoDerivedEqualitySuite extends CirceSuite {
     implicit val magnoliaDecoder7 = tag[Magnolia](deriveMagnoliaDecoder[Foo])
     implicit val magnoliaDecoder8 = tag[Magnolia](deriveMagnoliaDecoder[RecursiveAdtExample])
     implicit val magnoliaDecoder9 = tag[Magnolia](deriveMagnoliaDecoder[RecursiveWithOptionExample])
+    implicit val magnoliaDecoder1 = tag[Magnolia](deriveMagnoliaDecoder[AnyValInside])
     implicit val magnoliaDecoder5 = tag[Magnolia](Decoder.decodeSeq(magnoliaDecoder7))
   }
 
@@ -48,6 +50,7 @@ class SemiautoDerivedEqualitySuite extends CirceSuite {
     implicit val circeEncoder7 = tag[Circe](deriveEncoder[Foo])
     implicit val circeEncoder8 = tag[Circe](RecursiveAdtExample.encodeRecursiveAdtExample)
     implicit val circeEncoder9 = tag[Circe](RecursiveWithOptionExample.encodeRecursiveWithOptionExample)
+    implicit val circeEncoder1 = tag[Circe](deriveEncoder[AnyValInside])
     implicit val circeEncoder5: Encoder[Seq[Foo]] @@ Circe = tag[Circe](Encoder.encodeSeq(circeEncoder7))
 
 
@@ -57,6 +60,7 @@ class SemiautoDerivedEqualitySuite extends CirceSuite {
     implicit val circeDecoder7 = tag[Circe](deriveDecoder[Foo]: Decoder[Foo])
     implicit val circeDecoder8 = tag[Circe](RecursiveAdtExample.decodeRecursiveAdtExample)
     implicit val circeDecoder9 = tag[Circe](RecursiveWithOptionExample.decodeRecursiveWithOptionExample)
+    implicit val circeDecoder1 = tag[Circe](deriveDecoder[AnyValInside])
     implicit val circeDecoder5 = tag[Circe](Decoder.decodeSeq(circeDecoder7))
   }
 
@@ -65,10 +69,11 @@ class SemiautoDerivedEqualitySuite extends CirceSuite {
 
   checkLaws("Codec[Box[Int]]", CodecEquivalenceTests[Box[Int]].codecEquivalence)
   checkLaws("Codec[Qux[Int]]", CodecEquivalenceTests[Qux[Int]].codecEquivalence)
-  checkLaws("Codec[Seq[Foo]]", CodecEquivalenceTests[Seq[Foo]].codecEquivalence)
   checkLaws("Codec[Baz]", CodecEquivalenceTests[Baz].codecEquivalence)
   checkLaws("Codec[Foo]", CodecEquivalenceTests[Foo].codecEquivalence)
   checkLaws("Codec[RecursiveAdtExample]", CodecEquivalenceTests[RecursiveAdtExample].codecEquivalence)
   checkLaws("Codec[RecursiveWithOptionExample]", CodecEquivalenceTests[RecursiveWithOptionExample].codecEquivalence)
+  checkLaws("Codec[AnyValInside]", CodecEquivalenceTests[AnyValInside].codecEquivalence)
+  checkLaws("Codec[Seq[Foo]]", CodecEquivalenceTests[Seq[Foo]].codecEquivalence)
 }
 

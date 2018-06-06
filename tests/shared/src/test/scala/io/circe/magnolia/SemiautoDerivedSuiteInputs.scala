@@ -4,6 +4,7 @@ import cats.kernel.Eq
 import io.circe.generic.semiauto._
 import io.circe.{Decoder, Encoder}
 import org.scalacheck.{Arbitrary, Gen}
+import org.scalacheck.Arbitrary.arbitrary
 
 object SemiautoDerivedSuiteInputs {
 
@@ -46,6 +47,22 @@ object SemiautoDerivedSuiteInputs {
 
     implicit val encodeRecursiveWithOptionExample: Encoder[RecursiveWithOptionExample] =
       deriveEncoder
+  }
+
+  case class AnyInt(value: Int) extends AnyVal
+
+  object AnyInt {
+    implicit val encodeAnyInt: Encoder[AnyInt] = deriveEncoder
+    implicit val decodeAnyInt: Decoder[AnyInt] = deriveDecoder
+  }
+
+  case class AnyValInside(v: AnyInt)
+
+  object AnyValInside {
+    implicit val eqAnyValInside: Eq[AnyValInside] = Eq.fromUniversalEquals
+
+    implicit val arbitraryAnyValInside: Arbitrary[AnyValInside] =
+      Arbitrary(arbitrary[Int].map(i => AnyValInside(AnyInt(i))))
   }
 
   case class OvergenerationExampleInner(i: Int)

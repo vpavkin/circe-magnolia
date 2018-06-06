@@ -6,6 +6,7 @@ import io.circe.magnolia.derivation.decoder.auto._
 import io.circe.magnolia.derivation.encoder.auto._
 import io.circe.{Decoder, Encoder}
 import org.scalacheck.{Arbitrary, Gen}
+import org.scalacheck.Arbitrary.arbitrary
 
 object AutoDerivedSuiteInputs extends AllSyntax {
   case class InnerCaseClassExample(a: String, b: String, c: String, d: String)
@@ -81,6 +82,17 @@ object AutoDerivedSuiteInputs extends AllSyntax {
       else Gen.const(RecursiveWithListExample(Nil))
 
     implicit val arbitraryRecursiveWithListExample: Arbitrary[RecursiveWithListExample] = Arbitrary(atDepth(0))
+  }
+
+  case class AnyInt(value: Int) extends AnyVal
+
+  case class AnyValInside(v: AnyInt)
+
+  object AnyValInside {
+    implicit val eqAnyValInside: Eq[AnyValInside] = Eq.fromUniversalEquals
+
+    implicit val arbitraryAnyValInside: Arbitrary[AnyValInside] =
+      Arbitrary(arbitrary[Int].map(i => AnyValInside(AnyInt(i))))
   }
 
   import shapeless.tag

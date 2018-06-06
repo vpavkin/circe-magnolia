@@ -22,6 +22,9 @@ class SemiautoDerivedSuite extends CirceSuite {
   implicit val decodeFoo: Decoder[Foo] = deriveMagnoliaDecoder
   implicit val encodeFoo: Encoder[Foo] = deriveMagnoliaEncoder
 
+  implicit val decodeAnyValInside: Decoder[AnyValInside] = deriveMagnoliaDecoder
+  implicit val encodeAnyValInside: Encoder[AnyValInside] = deriveMagnoliaEncoder
+
   implicit val decodeRecursiveAdtExample: Decoder[RecursiveAdtExample] = deriveMagnoliaDecoder
   implicit val encodeRecursiveAdtExample: Encoder[RecursiveAdtExample] = deriveMagnoliaEncoder
 
@@ -39,6 +42,7 @@ class SemiautoDerivedSuite extends CirceSuite {
   checkLaws("Codec[Foo]", CodecTests[Foo].unserializableCodec)
   checkLaws("Codec[RecursiveAdtExample]", CodecTests[RecursiveAdtExample].unserializableCodec)
   checkLaws("Codec[RecursiveWithOptionExample]", CodecTests[RecursiveWithOptionExample].unserializableCodec)
+  checkLaws("Codec[AnyValInside]", CodecTests[AnyValInside].unserializableCodec)
 
   "A generically derived codec" should "not interfere with base instances" in forAll { (is: List[Int]) =>
     val json = Encoder[List[Int]].apply(is)

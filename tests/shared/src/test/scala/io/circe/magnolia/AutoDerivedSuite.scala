@@ -21,6 +21,7 @@ class AutoDerivedSuite extends CirceSuite {
   checkLaws("Codec[RecursiveAdtExample]", CodecTests[RecursiveAdtExample].unserializableCodec)
   checkLaws("Codec[RecursiveWithOptionExample]", CodecTests[RecursiveWithOptionExample].unserializableCodec)
   checkLaws("Codec[RecursiveWithListExample]", CodecTests[RecursiveWithListExample].unserializableCodec)
+  checkLaws("Codec[AnyValInside]", CodecTests[AnyValInside].unserializableCodec)
 
   "A generically derived codec" should "not interfere with base instances" in forAll { (is: List[Int]) =>
     val json = Encoder[List[Int]].apply(is)

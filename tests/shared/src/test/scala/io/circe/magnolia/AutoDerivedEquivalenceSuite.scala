@@ -6,13 +6,14 @@ import io.circe.{Decoder, Encoder}
 import shapeless.tag
 import tags._
 
-class AutoDerivedEqualitySuite extends CirceSuite {
+class AutoDerivedEquivalenceSuite extends CirceSuite {
   import AutoDerivedSuiteInputs._
 
   object magnolia {
     import io.circe.magnolia.derivation.decoder.auto._
     import io.circe.magnolia.derivation.encoder.auto._
 
+    implicit val magnoliaEncoder1 = tag[Magnolia](Encoder[AnyValInside])
     implicit val magnoliaEncoder3 = tag[Magnolia](Encoder[Qux[Int]])
     implicit val magnoliaEncoder4 = tag[Magnolia](Encoder[Seq[Foo]])
     implicit val magnoliaEncoder5 = tag[Magnolia](Encoder[Baz])
@@ -24,7 +25,7 @@ class AutoDerivedEqualitySuite extends CirceSuite {
     implicit val magnoliaEncoder11 = tag[Magnolia](Encoder[Seq[WithSeqOfTagged]])
     implicit val magnoliaEncoder12 = tag[Magnolia](Encoder[RecursiveWithListExample])
 
-
+    implicit val magnoliaDecoder1 = tag[Magnolia](Decoder[AnyValInside])
     implicit val magnoliaDecoder3 = tag[Magnolia](Decoder[Qux[Int]])
     implicit val magnoliaDecoder4 = tag[Magnolia](Decoder[Seq[Foo]])
     implicit val magnoliaDecoder5 = tag[Magnolia](Decoder[Baz])
@@ -41,6 +42,7 @@ class AutoDerivedEqualitySuite extends CirceSuite {
 
     import io.circe.generic.auto._
 
+    implicit val circeEncoder1 = tag[Circe](Encoder[AnyValInside])
     implicit val circeEncoder3 = tag[Circe](Encoder[Qux[Int]])
     implicit val circeEncoder4 = tag[Circe](Encoder[Seq[Foo]])
     implicit val circeEncoder5 = tag[Circe](Encoder[Baz])
@@ -53,6 +55,7 @@ class AutoDerivedEqualitySuite extends CirceSuite {
     implicit val circeEncoder12 = tag[Circe](Encoder[RecursiveWithListExample])
 
 
+    implicit val circeDecoder1 = tag[Circe](Decoder[AnyValInside])
     implicit val circeDecoder3 = tag[Circe](Decoder[Qux[Int]])
     implicit val circeDecoder4 = tag[Circe](Decoder[Seq[Foo]])
     implicit val circeDecoder5 = tag[Circe](Decoder[Baz])
@@ -68,24 +71,15 @@ class AutoDerivedEqualitySuite extends CirceSuite {
   import magnolia._
   import circe._
 
-  checkLaws("Codec[Qux[Int]]",
-    CodecEquivalenceTests[Qux[Int]].codecEquivalence)
-  checkLaws("Codec[Seq[Foo]]",
-    CodecEquivalenceTests[Seq[Foo]].codecEquivalence)
-  checkLaws("Codec[Baz]",
-    CodecEquivalenceTests[Baz].codecEquivalence)
-  checkLaws("Codec[Foo]",
-    CodecEquivalenceTests[Foo].codecEquivalence)
-  checkLaws("Codec[OuterCaseClassExample]",
-    CodecEquivalenceTests[OuterCaseClassExample].codecEquivalence)
-  checkLaws("Codec[RecursiveAdtExample]",
-    CodecEquivalenceTests[RecursiveAdtExample].codecEquivalence)
-  checkLaws("Codec[RecursiveWithOptionExample]",
-    CodecEquivalenceTests[RecursiveWithOptionExample].codecEquivalence)
-  checkLaws("Codec[WithTaggedMembers]",
-    CodecEquivalenceTests[WithTaggedMembers].codecEquivalence)
-  checkLaws("Codec[Seq[WithSeqOfTagged]]",
-    CodecEquivalenceTests[Seq[WithSeqOfTagged]].codecEquivalence)
-  checkLaws("Codec[RecursiveWithListExample]",
-    CodecEquivalenceTests[RecursiveWithListExample].codecEquivalence)
+  checkLaws("Codec[AnyValInside]", CodecEquivalenceTests[AnyValInside].codecEquivalence)
+  checkLaws("Codec[Qux[Int]]", CodecEquivalenceTests[Qux[Int]].codecEquivalence)
+  checkLaws("Codec[Seq[Foo]]", CodecEquivalenceTests[Seq[Foo]].codecEquivalence)
+  checkLaws("Codec[Baz]", CodecEquivalenceTests[Baz].codecEquivalence)
+  checkLaws("Codec[Foo]", CodecEquivalenceTests[Foo].codecEquivalence)
+  checkLaws("Codec[OuterCaseClassExample]", CodecEquivalenceTests[OuterCaseClassExample].codecEquivalence)
+  checkLaws("Codec[RecursiveAdtExample]", CodecEquivalenceTests[RecursiveAdtExample].codecEquivalence)
+  checkLaws("Codec[RecursiveWithOptionExample]", CodecEquivalenceTests[RecursiveWithOptionExample].codecEquivalence)
+  checkLaws("Codec[WithTaggedMembers]", CodecEquivalenceTests[WithTaggedMembers].codecEquivalence)
+  checkLaws("Codec[Seq[WithSeqOfTagged]]", CodecEquivalenceTests[Seq[WithSeqOfTagged]].codecEquivalence)
+  checkLaws("Codec[RecursiveWithListExample]", CodecEquivalenceTests[RecursiveWithListExample].codecEquivalence)
 }
