@@ -175,4 +175,6 @@ lazy val sharedReleaseProcess = Seq(
   )
 )
 
-addCommandAlias("validate", ";compile;testsJVM/test;testsJS/test")
+// js tests are turned off until https://github.com/propensive/magnolia/issues/101 is fixed
+// addCommandAlias("validate", ";compile;testsJVM/test;testsJS/test")
+addCommandAlias("validate", ";compile;testsJVM/test")
