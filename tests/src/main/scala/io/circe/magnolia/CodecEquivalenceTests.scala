@@ -48,8 +48,7 @@ trait CodecEquivalenceTests[A] extends Laws {
     implicit
     arbitraryA: Arbitrary[A],
     shrinkA: Shrink[A],
-    eqA: Eq[A],
-  ): RuleSet = new DefaultRuleSet(
+    eqA: Eq[A]): RuleSet = new DefaultRuleSet(
     name = "codec equality",
     parent = None,
     "encoder equivalence" -> Prop.forAll { (a: A) =>

@@ -7,7 +7,7 @@ lazy val buildSettings = Seq(
   crossScalaVersions := Seq("2.11.12", "2.12.6")
 )
 
-lazy val compilerOptions = Seq(
+def compilerOptions(compilerVersion: String) = Seq(
   "-deprecation",
   "-encoding", "utf-8",
   "-explaintypes",
@@ -39,20 +39,22 @@ lazy val compilerOptions = Seq(
   "-Yno-adapted-args",
   "-Ypartial-unification",
   "-Ywarn-dead-code",
-  "-Ywarn-extra-implicit",
   "-Ywarn-inaccessible",
   "-Ywarn-infer-any",
   "-Ywarn-nullary-override",
   "-Ywarn-nullary-unit",
   "-Ywarn-numeric-widen",
-  "-Ywarn-unused:implicits",
-  "-Ywarn-unused:imports",
-  "-Ywarn-unused:locals",
-  "-Ywarn-unused:params",
-  "-Ywarn-unused:patvars",
-  "-Ywarn-unused:privates",
-  "-Ywarn-value-discard"
-)
+  "-Ywarn-value-discard") ++ (
+  if (CrossVersion.partialVersion(compilerVersion).exists(_._2 >= 12)) Seq(
+    "-Xlint:constant",
+    "-Ywarn-extra-implicit",
+    "-Ywarn-unused:implicits",
+    "-Ywarn-unused:imports",
+    "-Ywarn-unused:locals",
+    "-Ywarn-unused:params",
+    "-Ywarn-unused:patvars",
+    "-Ywarn-unused:privates")
+  else Seq.empty)
 
 lazy val magnoliaVersion = "0.7.1"
 lazy val circeVersion = "0.10.0-M1"
@@ -61,7 +63,7 @@ lazy val scalatestVersion = "3.0.5"
 lazy val scalacheckVersion = "1.14.0"
 
 lazy val compilerSettings = Seq(
-  scalacOptions ++= compilerOptions,
+  scalacOptions ++= compilerOptions(scalaVersion.value),
   scalacOptions in(Compile, console) --= Seq("-Ywarn-unused:imports", "-Xfatal-warnings")
 )
 
