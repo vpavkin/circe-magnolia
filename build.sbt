@@ -56,13 +56,13 @@ lazy val compilerOptions = Seq(
 
 lazy val magnoliaVersion = "0.7.1"
 lazy val circeVersion = "0.10.0-M1"
+lazy val shapelessVersion = "2.3.3"
 lazy val scalatestVersion = "3.0.5"
 lazy val scalacheckVersion = "1.13.5"
 
 lazy val compilerSettings = Seq(
   scalacOptions ++= compilerOptions,
-  scalacOptions in(Compile, console) --= Seq("-Ywarn-unused:imports", "-Xfatal-warnings"),
-  testOptions in Test += Tests.Argument("-oF")
+  scalacOptions in(Compile, console) --= Seq("-Ywarn-unused:imports", "-Xfatal-warnings")
 )
 
 lazy val allSettings = buildSettings ++ compilerSettings ++ publishSettings
@@ -73,6 +73,8 @@ lazy val coreDependencies = libraryDependencies ++= Seq(
 )
 
 lazy val testDependencies = libraryDependencies ++= Seq(
+  "com.chuusai" %% "shapeless" % shapelessVersion % "test",
+  "io.circe" %%% "circe-testing" % circeVersion % "test",
   "org.scalacheck" %%% "scalacheck" % scalacheckVersion % "test",
   "org.scalatest" %%% "scalatest" % scalatestVersion % "test"
 )
