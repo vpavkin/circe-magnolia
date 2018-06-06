@@ -4,13 +4,10 @@ import cats.syntax.either._
 import io.circe.{Decoder, DecodingFailure, HCursor}
 import io.circe.Decoder.Result
 import magnolia._
-import scala.language.experimental.macros
 
-object MagnoliaDecoder {
+private[magnolia] object MagnoliaDecoder {
 
-  type Typeclass[T] = Decoder[T]
-
-  def combine[T](caseClass: CaseClass[Typeclass, T]): Decoder[T] = new Decoder[T] {
+  private[magnolia] def combine[T](caseClass: CaseClass[Decoder, T]): Decoder[T] = new Decoder[T] {
     def apply(c: HCursor): Result[T] =
       if (caseClass.isValueClass)
         caseClass.parameters.head.typeclass(c)
@@ -29,7 +26,7 @@ object MagnoliaDecoder {
             .leftMap(DecodingFailure.fromThrowable(_, c.history)))
   }
 
-  def dispatch[T](sealedTrait: SealedTrait[Typeclass, T]): Decoder[T] = new Decoder[T] {
+  private[magnolia] def dispatch[T](sealedTrait: SealedTrait[Decoder, T]): Decoder[T] = new Decoder[T] {
     def apply(c: HCursor): Result[T] = c.keys match {
       case Some(keys) if keys.size == 1 =>
         val key = keys.head
@@ -56,6 +53,4 @@ object MagnoliaDecoder {
         ))
     }
   }
-
-  implicit def genDecoder[T]: Typeclass[T] = macro Magnolia.gen[T]
 }

@@ -2,13 +2,10 @@ package io.circe.magnolia
 
 import io.circe.{Encoder, Json}
 import magnolia._
-import scala.language.experimental.macros
 
-object MagnoliaEncoder {
+private[magnolia] object MagnoliaEncoder {
 
-  type Typeclass[T] = Encoder[T]
-
-  def combine[T](caseClass: CaseClass[Typeclass, T]): Typeclass[T] = new Encoder[T] {
+  private[magnolia] def combine[T](caseClass: CaseClass[Encoder, T]): Encoder[T] = new Encoder[T] {
     def apply(a: T): Json = {
       if (caseClass.isValueClass) {
         val p = caseClass.parameters.head
@@ -24,7 +21,7 @@ object MagnoliaEncoder {
     }
   }
 
-  def dispatch[T](sealedTrait: SealedTrait[Typeclass, T]): Typeclass[T] = new Encoder[T] {
+  private[magnolia] def dispatch[T](sealedTrait: SealedTrait[Encoder, T]): Encoder[T] = new Encoder[T] {
     def apply(a: T): Json =
       sealedTrait.dispatch(a) { subtype =>
         Json.obj(
@@ -32,6 +29,4 @@ object MagnoliaEncoder {
         )
       }
   }
-
-  implicit def genEncoder[T]: Typeclass[T] = macro Magnolia.gen[T]
 }

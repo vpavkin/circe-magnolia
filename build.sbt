@@ -56,6 +56,8 @@ lazy val compilerOptions = Seq(
 
 lazy val magnoliaVersion = "0.7.1"
 lazy val circeVersion = "0.10.0-M1"
+lazy val scalatestVersion = "3.0.5"
+lazy val scalacheckVersion = "1.13.5"
 
 lazy val compilerSettings = Seq(
   scalacOptions ++= compilerOptions,
@@ -68,6 +70,11 @@ lazy val allSettings = buildSettings ++ compilerSettings ++ publishSettings
 lazy val coreDependencies = libraryDependencies ++= Seq(
   "io.circe" %%% "circe-core" % circeVersion,
   "com.propensive" %%% "magnolia" % magnoliaVersion
+)
+
+lazy val testDependencies = libraryDependencies ++= Seq(
+  "org.scalacheck" %%% "scalacheck" % scalacheckVersion % "test",
+  "org.scalatest" %%% "scalatest" % scalatestVersion % "test"
 )
 
 lazy val circeMagnolia = project.in(file("."))
@@ -98,6 +105,7 @@ lazy val tests = (crossProject in file("tests"))
   .settings(allSettings: _*)
   .settings(noPublishSettings: _*)
   .settings(coreDependencies)
+  .settings(testDependencies)
   .settings(
     coverageExcludedPackages := "circe-magnolia\\.tests\\..*"
   )
