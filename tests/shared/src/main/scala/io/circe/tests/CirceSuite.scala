@@ -7,7 +7,6 @@ import io.circe.testing.{ArbitraryInstances, EqInstances}
 import org.scalatest.FlatSpec
 import org.scalatest.prop.{Checkers, GeneratorDrivenPropertyChecks}
 import org.typelevel.discipline.Laws
-
 import scala.language.implicitConversions
 
 /**

@@ -73,10 +73,11 @@ lazy val coreDependencies = libraryDependencies ++= Seq(
 )
 
 lazy val testDependencies = libraryDependencies ++= Seq(
-  "com.chuusai" %% "shapeless" % shapelessVersion % "test",
-  "io.circe" %%% "circe-testing" % circeVersion % "test",
-  "org.scalacheck" %%% "scalacheck" % scalacheckVersion % "test",
-  "org.scalatest" %%% "scalatest" % scalatestVersion % "test"
+  "com.chuusai" %% "shapeless" % shapelessVersion,
+  "io.circe" %%% "circe-generic" % circeVersion,
+  "io.circe" %%% "circe-testing" % circeVersion,
+  "org.scalacheck" %%% "scalacheck" % scalacheckVersion,
+  "org.scalatest" %%% "scalatest" % scalatestVersion
 )
 
 lazy val circeMagnolia = project.in(file("."))
