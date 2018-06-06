@@ -22,7 +22,6 @@ lazy val compilerOptions = Seq(
   "-Xfuture",
   "-Xlint:adapted-args",
   "-Xlint:by-name-right-associative",
-  "-Xlint:constant",
   "-Xlint:delayedinit-select",
   "-Xlint:doc-detached",
   "-Xlint:inaccessible",
