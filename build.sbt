@@ -1,4 +1,5 @@
 import ReleaseTransformations._
+import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 
 lazy val buildSettings = Seq(
   organization := "ru.pavkin",
@@ -58,7 +59,7 @@ lazy val magnoliaVersion = "0.7.1"
 lazy val circeVersion = "0.10.0-M1"
 lazy val shapelessVersion = "2.3.3"
 lazy val scalatestVersion = "3.0.5"
-lazy val scalacheckVersion = "1.13.5"
+lazy val scalacheckVersion = "1.14.0"
 
 lazy val compilerSettings = Seq(
   scalacOptions ++= compilerOptions,
@@ -87,7 +88,8 @@ lazy val circeMagnolia = project.in(file("."))
   .aggregate(derivationJVM, derivationJS, testsJS, testsJVM)
   .dependsOn(derivationJVM, derivationJS, testsJS, testsJVM)
 
-lazy val derivation = (crossProject in file("derivation"))
+lazy val derivation = crossProject(JSPlatform, JVMPlatform).crossType(CrossType.Pure)
+  .in(file("derivation"))
   .settings(
     description := "Magnolia-based derivation for Circe codecs",
     moduleName := "circe-magnolia-derivation",
@@ -99,7 +101,8 @@ lazy val derivation = (crossProject in file("derivation"))
 lazy val derivationJVM = derivation.jvm
 lazy val derivationJS = derivation.js
 
-lazy val tests = (crossProject in file("tests"))
+lazy val tests = crossProject(JSPlatform, JVMPlatform).crossType(CrossType.Pure)
+  .in(file("tests"))
   .settings(
     description := "Circe-magnolia tests",
     moduleName := "circe-magnolia-tests",
