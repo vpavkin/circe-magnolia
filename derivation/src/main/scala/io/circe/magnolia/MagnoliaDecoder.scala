@@ -9,21 +9,12 @@ private[magnolia] object MagnoliaDecoder {
 
   private[magnolia] def combine[T](caseClass: CaseClass[Decoder, T]): Decoder[T] = new Decoder[T] {
     def apply(c: HCursor): Result[T] =
-      if (caseClass.isValueClass)
-        caseClass.parameters.head.typeclass(c)
-          .flatMap(singlePar =>
-            Either.catchNonFatal(caseClass.rawConstruct(Seq(singlePar)))
-              .leftMap(DecodingFailure.fromThrowable(_, c.history))
-          )
-      else if (caseClass.isObject)
-        Right(caseClass.construct(_ => ()))
-      else
-        caseClass.parameters.map(p => c.downField(p.label).as[p.PType](p.typeclass))
-          .foldLeft(Right(List.empty): Decoder.Result[List[Any]]) {
-            case (l, r) => l.flatMap(ll => r.map(rr => ll ++ List(rr)))
-          }
-          .flatMap(v => Either.catchNonFatal(caseClass.rawConstruct(v))
-            .leftMap(DecodingFailure.fromThrowable(_, c.history)))
+      caseClass.parameters.map(p => c.downField(p.label).as[p.PType](p.typeclass))
+        .foldLeft(Right(List.empty): Decoder.Result[List[Any]]) {
+          case (l, r) => l.flatMap(ll => r.map(rr => ll ++ List(rr)))
+        }
+        .flatMap(v => Either.catchNonFatal(caseClass.rawConstruct(v))
+          .leftMap(DecodingFailure.fromThrowable(_, c.history)))
   }
 
   private[magnolia] def dispatch[T](sealedTrait: SealedTrait[Decoder, T]): Decoder[T] = new Decoder[T] {
