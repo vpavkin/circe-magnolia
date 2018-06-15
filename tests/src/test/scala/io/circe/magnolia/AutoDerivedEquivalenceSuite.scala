@@ -10,6 +10,10 @@ class AutoDerivedEquivalenceSuite extends CirceSuite {
   import AutoDerivedSuiteInputs._
 
   object magnolia {
+
+    // TODO: This is a temporary workaround for https://github.com/propensive/magnolia/issues/89
+    import Baz._
+
     import io.circe.magnolia.derivation.decoder.auto._
     import io.circe.magnolia.derivation.encoder.auto._
 
