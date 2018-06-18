@@ -1,5 +1,5 @@
 # circe-magnolia
-### Codec derivation for [Circe](https://circe.io) using [Magnolia](http://magnolia.work/).
+### Codec derivation for [Circe](circe.io) using [Magnolia](http://magnolia.work/).
 
 [![Build Status](https://img.shields.io/travis/vpavkin/circe-magnolia/master.svg)](https://travis-ci.org/vpavkin/magnolia)
 [![Coverage status](https://img.shields.io/codecov/c/github/vpavkin/circe-magnolia/master.svg)](https://codecov.io/github/vpavkin/magnolia?branch=master)
