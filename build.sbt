@@ -166,8 +166,7 @@ lazy val sharedReleaseProcess = Seq(
     checkSnapshotDependencies,
     inquireVersions,
     runClean,
-    // tests are intentionally red ATM, so turn them off
-    //    runTest,
+    runTest,
     setReleaseVersion,
     commitReleaseVersion,
     tagRelease,
@@ -179,6 +178,4 @@ lazy val sharedReleaseProcess = Seq(
   )
 )
 
-// js tests are turned off until https://github.com/propensive/magnolia/issues/101 is fixed
-// addCommandAlias("validate", ";compile;testsJVM/test;testsJS/test")
-addCommandAlias("validate", ";compile;testsJVM/test")
+addCommandAlias("validate", ";compile;testsJVM/test;testsJS/test")
