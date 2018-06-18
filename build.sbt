@@ -113,7 +113,7 @@ lazy val tests = crossProject(JSPlatform, JVMPlatform).crossType(CrossType.Pure)
   .settings(coreDependencies)
   .settings(testDependencies)
   .settings(
-    coverageExcludedPackages := "circe-magnolia\\.tests\\..*"
+    coverageExcludedPackages :=".*"
   )
   .jsConfigure(_.enablePlugins(ScalaJSBundlerPlugin))
   .dependsOn(derivation)
