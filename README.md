@@ -7,9 +7,9 @@
 
 This library provides facilities to derive JSON codec instances for Circe using Magnolia macros.
 
-### ⚠️ Early development status warning.
+### ⚠️ Early development status warning
 Although this project is extensively tested and seems to work fine, it's still at early development stages. 
-It's not advised to use this in production without proper test coverage of dependant code.
+It's not advised to use this in production without proper test coverage of related code.
 
 There are still some things, that are different from circe-generic, including a critical issue with auto derivation.
 
@@ -71,10 +71,10 @@ Overall, **semiauto** derivation works pretty well. All laws are satisfied and c
 
 There is a subtle difference from circe-generic semiauto in what can and what can not be derived. Circe-magnolia deriver has more relaxed requirements on what has to be in scope, so you might not even notice this. Basically, circe-magnolia doesn't require any pre-defined codecs for intermediate types. 
 
-In essense: current version of `circe-magnolia` semiauto is as powerful as `circe-generic`'s auto under the hood. It doesn't provide any top-level implicits out of the box - you have to call `deriveMagnolia[Encoder|Decoder]` to start derivation process. See more [here](https://github.com/propensive/magnolia/issues/105)
+In essense: current version of `circe-magnolia` semiauto is as powerful as `circe-generic`'s auto under the hood. It just doesn't provide any top-level implicits out of the box - you have to call `deriveMagnolia[Encoder|Decoder]` to start derivation process. See more [here](https://github.com/propensive/magnolia/issues/105)
 
 **Auto** derivation also works, but there's a twist: at the moment, for default codecs (for example, `Encoder[List]`) to be picked up, they have to be imported explicitly.
-Otherwise, deriver uses Magnolia to derive default codecs for types which are either case classes or sealed traits.
+Otherwise, deriver uses Magnolia to derive codecs for any types which are either case classes or sealed traits. These derived codecs then override the default ones.
 
 This is definitely going to be fixed in future, but if you want to switch from circe-generic's auto to circe-magnolia's auto today, you would have to add additional imports to every place where derivation takes place:
 
@@ -103,7 +103,7 @@ I really welcome any kind of contributions, including test/bug reports and bench
 I really appreciate all the people who contributed to the project:
 * [Jon Pretty](https://github.com/propensive)
 
-I also want to say "Thank you!" to 
+I also want to say "Thank you!" to
 
 * [Jon Pretty](https://github.com/propensive) for active collaboration and improvements in Magnolia, that make this project progress.
 * [Travis Brown](https://github.com/travisbrown) for his amazing Circe project.
