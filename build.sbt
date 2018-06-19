@@ -2,7 +2,7 @@ import ReleaseTransformations._
 import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 
 lazy val buildSettings = Seq(
-  organization := "ru.pavkin",
+  organization := "io.circe",
   scalaVersion := "2.12.6"
 )
 
