@@ -1,9 +1,9 @@
 # circe-magnolia
 ### Codec derivation for [Circe](circe.io) using [Magnolia](http://magnolia.work/).
 
-[![Build Status](https://img.shields.io/travis/vpavkin/circe-magnolia/master.svg)](https://travis-ci.org/vpavkin/magnolia)
-[![Coverage status](https://img.shields.io/codecov/c/github/vpavkin/circe-magnolia/master.svg)](https://codecov.io/github/vpavkin/magnolia?branch=master)
-[![Maven Central](https://img.shields.io/maven-central/v/io.circe/circe-magnolia-derivation_2.12.svg)](https://github.com/vpavkin/circe-magnolia)
+[![Build Status](https://img.shields.io/travis/circe/circe-magnolia/master.svg)](https://travis-ci.org/circe/circe-magnolia)
+[![Coverage status](https://img.shields.io/codecov/c/github/circe/circe-magnolia/master.svg)](https://codecov.io/github/circe/circe-magnolia?branch=master)
+[![Maven Central](https://img.shields.io/maven-central/v/io.circe/circe-magnolia-derivation_2.12.svg)](https://github.com/circe/circe-magnolia)
 
 This library provides facilities to derive JSON codec instances for Circe using Magnolia macros.
 
@@ -59,9 +59,9 @@ val decoder = deriveMagnoliaDecoder[Foo]
 
 ### Testing
 
-To ensure `circe-magnolia` derivation and codecs work in the same way as in `circe-generic`, several test suites from original circe repository were adapted and added to this project. These tests validate the derivation semantics and also the lawfulness of derived codecs ([example](https://github.com/vpavkin/circe-magnolia/blob/master/tests/src/test/scala/io/circe/magnolia/AutoDerivedSuite.scala)).
+To ensure `circe-magnolia` derivation and codecs work in the same way as in `circe-generic`, several test suites from original circe repository were adapted and added to this project. These tests validate the derivation semantics and also the lawfulness of derived codecs ([example](https://github.com/circe/circe-magnolia/blob/master/tests/src/test/scala/io/circe/magnolia/AutoDerivedSuite.scala)).
 
-There's another set of tests, that validate the equivalence of JSON and decoding logic, produced by `circe-magnolia` and `circe-generic` ([example](https://github.com/vpavkin/circe-magnolia/blob/master/tests/src/test/scala/io/circe/magnolia/AutoDerivedEquivalenceSuite.scala)).
+There's another set of tests, that validate the equivalence of JSON and decoding logic, produced by `circe-magnolia` and `circe-generic` ([example](https://github.com/circe/circe-magnolia/blob/master/tests/src/test/scala/io/circe/magnolia/AutoDerivedEquivalenceSuite.scala)).
 
 Test suite is currently green, but couple of cases are worked around or ignored, and waiting to be fixed. See the issue tracker for outstanding issues.
 

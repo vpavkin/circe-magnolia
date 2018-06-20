@@ -131,7 +131,7 @@ lazy val publishSettings = Seq(
   releaseIgnoreUntrackedFiles := true,
   releaseCrossBuild := true,
   releasePublishArtifactsAction := PgpKeys.publishSigned.value,
-  homepage := Some(url("https://github.com/vpavkin/circe-magnolia")),
+  homepage := Some(url("https://github.com/circe/circe-magnolia")),
   licenses := Seq("Apache 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
   publishMavenStyle := true,
   publishArtifact in Test := false,
@@ -147,8 +147,8 @@ lazy val publishSettings = Seq(
   apiURL := Some(url("https://vpavkin.github.io/circe-magnolia/api/")),
   scmInfo := Some(
     ScmInfo(
-      url("https://github.com/vpavkin/circe-magnolia"),
-      "scm:git:git@github.com:vpavkin/circe-magnolia.git"
+      url("https://github.com/circe/circe-magnolia"),
+      "scm:git:git@github.com:circe/circe-magnolia.git"
     )
   ),
   pomExtra :=
