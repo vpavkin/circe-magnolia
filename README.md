@@ -102,6 +102,7 @@ I really welcome any kind of contributions, including test/bug reports and bench
 
 I really appreciate all the people who contributed to the project:
 * [Jon Pretty](https://github.com/propensive)
+* [Artsiom Miklushou](https://github.com/mikla)
 
 I also want to say "Thank you!" to
 
