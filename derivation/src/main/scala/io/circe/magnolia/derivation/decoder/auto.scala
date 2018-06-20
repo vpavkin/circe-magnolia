@@ -9,10 +9,10 @@ object auto {
 
   type Typeclass[T] = Decoder[T]
 
-  private[magnolia] def combine[T](caseClass: CaseClass[Typeclass, T]): Typeclass[T] =
+  def combine[T](caseClass: CaseClass[Typeclass, T]): Typeclass[T] =
     MagnoliaDecoder.combine(caseClass)
 
-  private[magnolia] def dispatch[T](sealedTrait: SealedTrait[Typeclass, T]): Typeclass[T] =
+  def dispatch[T](sealedTrait: SealedTrait[Typeclass, T]): Typeclass[T] =
     MagnoliaDecoder.dispatch(sealedTrait)
 
   implicit def magnoliaDecoder[T]: Typeclass[T] = macro Magnolia.gen[T]
