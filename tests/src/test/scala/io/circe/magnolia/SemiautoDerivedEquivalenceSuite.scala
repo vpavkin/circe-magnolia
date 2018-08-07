@@ -17,6 +17,8 @@ class SemiautoDerivedEquivalenceSuite extends CirceSuite {
     implicit val magnoliaEncoder3 = tag[Magnolia](deriveMagnoliaEncoder[Box[Int]])
     implicit val magnoliaEncoder4 = tag[Magnolia](deriveMagnoliaEncoder[Qux[Int]])
     implicit val magnoliaEncoder6 = tag[Magnolia](deriveMagnoliaEncoder[Baz])
+    implicit val magnoliaEncoder11 = tag[Magnolia](deriveMagnoliaEncoder[Wub])
+    implicit val magnoliaEncoder10 = tag[Magnolia](deriveMagnoliaEncoder[Bam])
     implicit val magnoliaEncoder7 = tag[Magnolia](deriveMagnoliaEncoder[Foo])
     implicit val magnoliaEncoder8 = tag[Magnolia](deriveMagnoliaEncoder[RecursiveAdtExample])
     implicit val magnoliaEncoder9 = tag[Magnolia](deriveMagnoliaEncoder[RecursiveWithOptionExample])
@@ -26,6 +28,8 @@ class SemiautoDerivedEquivalenceSuite extends CirceSuite {
 
     implicit val magnoliaDecoder3 = tag[Magnolia](deriveMagnoliaDecoder[Box[Int]])
     implicit val magnoliaDecoder4 = tag[Magnolia](deriveMagnoliaDecoder[Qux[Int]])
+    implicit val magnoliaDecoder11 = tag[Magnolia](deriveMagnoliaDecoder[Wub])
+    implicit val magnoliaDecoder10 = tag[Magnolia](deriveMagnoliaDecoder[Bam])
     implicit val magnoliaDecoder6 = tag[Magnolia](deriveMagnoliaDecoder[Baz])
     implicit val magnoliaDecoder7 = tag[Magnolia](deriveMagnoliaDecoder[Foo])
     implicit val magnoliaDecoder8 = tag[Magnolia](deriveMagnoliaDecoder[RecursiveAdtExample])
