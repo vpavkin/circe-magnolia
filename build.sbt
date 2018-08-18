@@ -55,7 +55,8 @@ def compilerOptions(compilerVersion: String) = Seq(
     "-Ywarn-unused:privates")
   else Seq.empty)
 
-lazy val magnoliaVersion = "0.9.0"
+lazy val magnoliaVersion = "0.10.0"
+lazy val mercatorVersion = "0.1.1"
 lazy val circeVersion = "0.10.0-M1"
 lazy val shapelessVersion = "2.3.3"
 lazy val scalatestVersion = "3.0.5"
@@ -70,7 +71,8 @@ lazy val allSettings = buildSettings ++ compilerSettings ++ publishSettings
 
 lazy val coreDependencies = libraryDependencies ++= Seq(
   "io.circe" %%% "circe-core" % circeVersion,
-  "com.propensive" %%% "magnolia" % magnoliaVersion
+  "com.propensive" %%% "magnolia" % magnoliaVersion,
+  "com.propensive" %%% "mercator" % mercatorVersion
 )
 
 lazy val testDependencies = libraryDependencies ++= Seq(

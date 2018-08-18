@@ -4,17 +4,13 @@ import cats.syntax.either._
 import io.circe.{Decoder, DecodingFailure, HCursor}
 import io.circe.Decoder.Result
 import magnolia._
+import mercator._
 
 private[magnolia] object MagnoliaDecoder {
 
   private[magnolia] def combine[T](caseClass: CaseClass[Decoder, T]): Decoder[T] = new Decoder[T] {
     def apply(c: HCursor): Result[T] =
-      caseClass.parameters.map(p => c.downField(p.label).as[p.PType](p.typeclass))
-        .foldLeft(Right(List.empty): Decoder.Result[List[Any]]) {
-          case (l, r) => l.flatMap(ll => r.map(rr => ll ++ List(rr)))
-        }
-        .flatMap(v => Either.catchNonFatal(caseClass.rawConstruct(v))
-          .leftMap(DecodingFailure.fromThrowable(_, c.history)))
+      caseClass.constructMonadic(p => c.downField(p.label).as[p.PType](p.typeclass))
   }
 
   private[magnolia] def dispatch[T](sealedTrait: SealedTrait[Decoder, T]): Decoder[T] = new Decoder[T] {
