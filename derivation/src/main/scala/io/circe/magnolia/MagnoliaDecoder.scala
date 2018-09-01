@@ -14,6 +14,8 @@ private[magnolia] object MagnoliaDecoder {
   }
 
   private[magnolia] def dispatch[T](sealedTrait: SealedTrait[Decoder, T]): Decoder[T] = new Decoder[T] {
+    lazy val knownSubTypes = sealedTrait.subtypes.map(_.typeName.short).mkString(",")
+    
     def apply(c: HCursor): Result[T] = c.keys match {
       case Some(keys) if keys.size == 1 =>
         val key = keys.head
@@ -24,7 +26,7 @@ private[magnolia] object MagnoliaDecoder {
               s"""Can't decode coproduct type: couldn't find matching subtype.
                  |JSON: ${c.value},
                  |Key: $key
-                 |Known subtypes: ${sealedTrait.subtypes.map(_.typeName.short).mkString(",")}\n""".stripMargin,
+                 |Known subtypes: $knownSubTypes\n""".stripMargin,
               c.history
             ))
 
@@ -35,7 +37,7 @@ private[magnolia] object MagnoliaDecoder {
           s"""Can't decode coproduct type: zero or several keys were found, while coproduct type requires exactly one.
              |JSON: ${c.value},
              |Keys: ${c.keys.map(_.mkString(","))}
-             |Known subtypes: ${sealedTrait.subtypes.map(_.typeName.short).mkString(",")}\n""".stripMargin,
+             |Known subtypes: $knownSubTypes\n""".stripMargin,
           c.history
         ))
     }
