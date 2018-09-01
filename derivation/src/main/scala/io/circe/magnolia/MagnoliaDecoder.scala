@@ -13,31 +13,36 @@ private[magnolia] object MagnoliaDecoder {
       caseClass.constructMonadic(p => c.downField(p.label).as[p.PType](p.typeclass))
   }
 
-  private[magnolia] def dispatch[T](sealedTrait: SealedTrait[Decoder, T]): Decoder[T] = new Decoder[T] {
-    def apply(c: HCursor): Result[T] = c.keys match {
-      case Some(keys) if keys.size == 1 =>
-        val key = keys.head
-        for {
-          theSubtype <- Either.fromOption(
-            sealedTrait.subtypes.find(_.typeName.short == key),
-            DecodingFailure(
-              s"""Can't decode coproduct type: couldn't find matching subtype.
-                 |JSON: ${c.value},
-                 |Key: $key
-                 |Known subtypes: ${sealedTrait.subtypes.map(_.typeName.short).mkString(",")}\n""".stripMargin,
-              c.history
-            ))
+  private[magnolia] def dispatch[T](sealedTrait: SealedTrait[Decoder, T]): Decoder[T] = {
 
-          result <- c.get(key)(theSubtype.typeclass)
-        } yield result
-      case _ =>
-        Left(DecodingFailure(
-          s"""Can't decode coproduct type: zero or several keys were found, while coproduct type requires exactly one.
-             |JSON: ${c.value},
-             |Keys: ${c.keys.map(_.mkString(","))}
-             |Known subtypes: ${sealedTrait.subtypes.map(_.typeName.short).mkString(",")}\n""".stripMargin,
-          c.history
-        ))
+    lazy val knownSubTypes = sealedTrait.subtypes.map(_.typeName.short).mkString(",")
+    
+    new Decoder[T] {
+      def apply(c: HCursor): Result[T] = c.keys match {
+        case Some(keys) if keys.size == 1 =>
+          val key = keys.head
+          for {
+            theSubtype <- Either.fromOption(
+              sealedTrait.subtypes.find(_.typeName.short == key),
+              DecodingFailure(
+                s"""Can't decode coproduct type: couldn't find matching subtype.
+                   |JSON: ${c.value},
+                   |Key: $key
+                   |Known subtypes: $knownSubTypes\n""".stripMargin,
+                c.history
+              ))
+  
+            result <- c.get(key)(theSubtype.typeclass)
+          } yield result
+        case _ =>
+          Left(DecodingFailure(
+            s"""Can't decode coproduct type: zero or several keys were found, while coproduct type requires exactly one.
+               |JSON: ${c.value},
+               |Keys: ${c.keys.map(_.mkString(","))}
+               |Known subtypes: $knownSubTypes\n""".stripMargin,
+            c.history
+          ))
+      }
     }
   }
 }
