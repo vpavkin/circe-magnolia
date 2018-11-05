@@ -57,7 +57,7 @@ def compilerOptions(compilerVersion: String) = Seq(
 
 lazy val magnoliaVersion = "0.10.0"
 lazy val mercatorVersion = "0.1.1"
-lazy val circeVersion = "0.10.0"
+lazy val circeVersion = "0.10.1"
 lazy val shapelessVersion = "2.3.3"
 lazy val scalatestVersion = "3.0.5"
 lazy val scalacheckVersion = "1.14.0"
