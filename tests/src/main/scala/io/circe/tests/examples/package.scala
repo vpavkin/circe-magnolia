@@ -140,4 +140,16 @@ package examples {
       }
     }
   }
+
+  sealed trait Organization
+  final case class Public(name: String, taxCategory: String) extends Organization
+  final case class NonProfit(orgName: String) extends Organization
+
+  final case class ClassWithDefaults(
+    required: String,
+    field: String = "defaultValue",
+    defaultOptSome: Option[String] = Some("defaultOptSome"),
+    defaultNone: Option[String] = None
+  )
+
 }
