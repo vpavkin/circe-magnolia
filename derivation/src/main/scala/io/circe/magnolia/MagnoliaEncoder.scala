@@ -6,24 +6,31 @@ import magnolia._
 
 private[magnolia] object MagnoliaEncoder {
 
-  private[magnolia] def combine[T](
-    caseClass: CaseClass[Encoder, T]
-  )(implicit config: Configuration): Encoder[T] = {
-    {
-      val origParameterNames = caseClass.parameters.map(_.label)
-      val transformed = origParameterNames.map(config.transformMemberNames).distinct
-      if (transformed.length != origParameterNames.length) {
-        throw new DerivationError("Duplicate key detected after applying transformation function for case class parameters")
+  private[magnolia] def combine[T](caseClass: CaseClass[Encoder, T])(implicit config: Configuration): Encoder[T] = {
+    val paramJsonKeyLookup = caseClass.parameters.map { p =>
+      val jsonKeyAnnotation = p.annotations.collectFirst {
+        case ann: JsonKey => ann
       }
+      jsonKeyAnnotation match {
+        case Some(ann) => p.label -> ann.value
+        case None => p.label -> config.transformMemberNames(p.label)
+      }
+    }.toMap
+
+    if (paramJsonKeyLookup.values.toList.distinct.size != caseClass.parameters.length) {
+      throw new DerivationError(
+        "Duplicate key detected after applying transformation function for case class parameters"
+      )
     }
+
     new Encoder[T] {
-    def apply(a: T): Json = {
-      Json.obj(caseClass.parameters.map { p =>
-        val label = config.transformMemberNames(p.label)
-        label -> p.typeclass(p.dereference(a))
-      }: _*)
+      def apply(a: T): Json =
+        Json.obj(caseClass.parameters.map { p =>
+          val label = paramJsonKeyLookup.get(p.label).get
+          label -> p.typeclass(p.dereference(a))
+        }: _*)
     }
-  }}
+  }
 
   private[magnolia] def dispatch[T](
     sealedTrait: SealedTrait[Encoder, T]
@@ -32,8 +39,10 @@ private[magnolia] object MagnoliaEncoder {
       val origTypeNames = sealedTrait.subtypes.map(_.typeName.short)
       val transformed = origTypeNames.map(config.transformConstructorNames).distinct
       if (transformed.length != origTypeNames.length) {
-        throw new DerivationError("Duplicate key detected after applying transformation function for " +
-          "sealed trait child classes")
+        throw new DerivationError(
+          "Duplicate key detected after applying transformation function for " +
+            "sealed trait child classes"
+        )
       }
     }
 

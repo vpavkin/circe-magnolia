@@ -4,7 +4,7 @@ import io.circe.magnolia.DerivationError
 import io.circe.{CursorOp, Decoder, DecodingFailure, Encoder}
 import io.circe.magnolia.configured.ConfiguredSemiautoDerivedSuite.{DefaultConfig, SnakeCaseAndDiscriminator, WithDefaultValue}
 import io.circe.tests.CirceSuite
-import io.circe.tests.examples.{Bar, ClassWithDefaults, NonProfit, Organization, Public}
+import io.circe.tests.examples.{Bar, ClassWithDefaults, ClassWithJsonKey, NonProfit, Organization, Public}
 import org.scalatest.Inside
 import io.circe.parser.parse
 import io.circe.magnolia.configured.decoder.semiauto.deriveConfiguredMagnoliaDecoder
@@ -91,6 +91,24 @@ class ConfiguredSemiautoDerivedSuite extends CirceSuite with Inside {
     assert(DefaultConfig.encoder(obj) == expectedJson)
     assert(DefaultConfig.decoder(expectedJson.hcursor) == Right(obj))
 
+  }
+
+  it should "use JsonKey annotated name when encoding and decoding, taking precedence over any other transformation" in {
+    implicit val config = Configuration.default.withSnakeCaseMemberNames
+    val encoder = deriveConfiguredMagnoliaEncoder[ClassWithJsonKey]
+    val decoder = deriveConfiguredMagnoliaDecoder[ClassWithJsonKey]
+
+    val jsonResult = parse(
+      """
+         {
+           "Renamed": "value",
+           "another_field": "another"
+         }
+      """).right.get
+
+    val expected = ClassWithJsonKey("value", "another")
+    assert(decoder.apply(jsonResult.hcursor) == Right(expected))
+    assert(encoder.apply(expected) == jsonResult)
   }
 
   "Configuration#useDefaults" should "Use the parameter default value if key does not exist in JSON" in {

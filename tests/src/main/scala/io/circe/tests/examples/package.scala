@@ -35,6 +35,9 @@ package object examples extends AllInstances with ArbitraryInstances {
 }
 
 package examples {
+
+  import io.circe.magnolia.JsonKey
+
   case class Box[A](a: A)
 
   object Box {
@@ -150,6 +153,11 @@ package examples {
     field: String = "defaultValue",
     defaultOptSome: Option[String] = Some("defaultOptSome"),
     defaultNone: Option[String] = None
+  )
+
+  final case class ClassWithJsonKey(
+    @JsonKey("Renamed") origName: String,
+    anotherField: String
   )
 
 }

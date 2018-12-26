@@ -14,7 +14,16 @@ private[magnolia] object MagnoliaDecoder {
   )(implicit configuration: Configuration): Decoder[T] = {
     // Ideally CaseClass should provide a way to attach extra data to each Param
     // to avoid the need for lookups
-    val paramJsonKeyLookup: Map[String, String] = caseClass.parameters.map(p => p.label -> configuration.transformMemberNames(p.label)).toMap
+    val paramJsonKeyLookup: Map[String, String] = caseClass.parameters.map{ p =>
+      val jsonKeyAnnotation = p.annotations.collectFirst {
+        case ann: JsonKey => ann
+      }
+      jsonKeyAnnotation match {
+        case Some(ann) => p.label -> ann.value
+        case None => p.label -> configuration.transformMemberNames(p.label)
+      }
+    }.toMap
+
     if (paramJsonKeyLookup.values.toList.distinct.length != caseClass.parameters.length) {
       throw new DerivationError("Duplicate key detected after applying transformation function for case class parameters")
     }
