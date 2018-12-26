@@ -1,20 +1,14 @@
 package io.circe.magnolia
 
-import org.scalacheck.{Arbitrary, Gen}
+import io.circe.generic.extras.{Configuration => GeConfiguration}
 
 package object configured {
-  implicit val genConfiguration: Gen[Configuration] = {
-    val genFunc = implicitly[Arbitrary[String => String]].arbitrary
-    for {
-      transformMemberNames <- genFunc
-      transformConstructorNames <- genFunc
-      useDefaults <- implicitly[Arbitrary[Boolean]].arbitrary
-      discriminator <- implicitly[Arbitrary[Option[String]]].arbitrary
-    } yield Configuration(
-      transformMemberNames = transformMemberNames,
-      transformConstructorNames = transformConstructorNames,
-      useDefaults = useDefaults,
-      discriminator = discriminator
+  def toGenericExtrasConfig(c: Configuration): GeConfiguration = {
+    GeConfiguration(
+      transformMemberNames = c.transformMemberNames,
+      transformConstructorNames = c.transformConstructorNames,
+      useDefaults = c.useDefaults,
+      discriminator = c.discriminator
     )
   }
 }

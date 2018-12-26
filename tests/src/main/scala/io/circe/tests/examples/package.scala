@@ -6,6 +6,8 @@ import cats.syntax.functor._
 import io.circe.{Decoder, DecodingFailure, Encoder, Json}
 import io.circe.testing.ArbitraryInstances
 import org.scalacheck.{Arbitrary, Gen}
+import io.circe.magnolia.JsonKey
+import io.circe.generic.extras.{JsonKey => GeJsonKey}
 
 package object examples extends AllInstances with ArbitraryInstances {
   val glossary: Json = Json.obj(
@@ -35,8 +37,6 @@ package object examples extends AllInstances with ArbitraryInstances {
 }
 
 package examples {
-
-  import io.circe.magnolia.JsonKey
 
   case class Box[A](a: A)
 
@@ -144,6 +144,7 @@ package examples {
     }
   }
 
+  //TODOO: do we need this?
   sealed trait Organization
   final case class Public(name: String, taxCategory: String) extends Organization
   final case class NonProfit(orgName: String) extends Organization
@@ -155,9 +156,35 @@ package examples {
     defaultNone: Option[String] = None
   )
 
+  object ClassWithDefaults {
+    implicit val eq: Eq[ClassWithDefaults] = Eq.fromUniversalEquals
+    implicit val arbitrary: Arbitrary[ClassWithDefaults] = Arbitrary(for {
+      required <- Arbitrary.arbitrary[String]
+      field <- Arbitrary.arbitrary[String]
+      defaultOptSome <- Arbitrary.arbitrary[Option[String]]
+      defaultNone <- Arbitrary.arbitrary[Option[String]]
+    } yield ClassWithDefaults(
+      required = required,
+      field = field,
+      defaultOptSome = defaultOptSome,
+      defaultNone = defaultNone
+    ))
+  }
+
   final case class ClassWithJsonKey(
-    @JsonKey("Renamed") origName: String,
+    @GeJsonKey("Renamed") @JsonKey("Renamed") origName: String,
     anotherField: String
   )
+
+  object ClassWithJsonKey {
+    implicit val eq: Eq[ClassWithJsonKey] = Eq.fromUniversalEquals
+    implicit val arbitrary: Arbitrary[ClassWithJsonKey] = Arbitrary(for {
+      origName <- Arbitrary.arbitrary[String]
+      anotherField <- Arbitrary.arbitrary[String]
+    } yield ClassWithJsonKey(
+      origName,
+      anotherField
+    ))
+  }
 
 }

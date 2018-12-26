@@ -4,6 +4,7 @@ import cats.instances.either._
 import cats.kernel.Eq
 import cats.laws._
 import cats.laws.discipline._
+import io.circe.magnolia.tags.{TaggedDecoder, TaggedEncoder}
 import io.circe.{Decoder, Encoder, Json}
 import org.scalacheck.{Arbitrary, Prop, Shrink}
 import org.typelevel.discipline.Laws
@@ -34,10 +35,10 @@ object CodecEquivalenceLaws {
     circeEncode: Encoder[A] @@ tags.Circe,
     magnoliaEncode: Encoder[A] @@ tags.Magnolia) = new CodecEquivalenceLaws[A] {
 
-    val circeDecoder = circeDecode
-    val magnoliaDecoder = magnoliaDecode
-    val circeEncoder = circeEncode
-    val magnoliaEncoder = magnoliaEncode
+    override val circeDecoder = circeDecode
+    override val magnoliaDecoder = magnoliaDecode
+    override val circeEncoder = circeEncode
+    override val magnoliaEncoder = magnoliaEncode
   }
 }
 
@@ -69,5 +70,15 @@ object CodecEquivalenceTests {
     magnoliaEncode: Encoder[A] @@ tags.Magnolia): CodecEquivalenceTests[A] = new CodecEquivalenceTests[A] {
     val laws: CodecEquivalenceLaws[A] = CodecEquivalenceLaws[A](
       circeDecode, magnoliaDecode, circeEncode, magnoliaEncode)
+  }
+
+  def useTagged[A](
+    implicit
+    circeDecode: TaggedDecoder[tags.Circe, A],
+    magnoliaDecode: TaggedDecoder[tags.Magnolia, A],
+    circeEncode: TaggedEncoder[tags.Circe, A],
+    magnoliaEncode: TaggedEncoder[tags.Magnolia, A]): CodecEquivalenceTests[A] = new CodecEquivalenceTests[A] {
+    val laws: CodecEquivalenceLaws[A] = CodecEquivalenceLaws[A](
+      circeDecode.toTagged, magnoliaDecode.toTagged, circeEncode.toTagged, magnoliaEncode.toTagged)
   }
 }
