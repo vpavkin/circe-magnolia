@@ -84,8 +84,8 @@ package examples {
       } yield Bar(i, s)
     )
 
-    val decodeBar: Decoder[Bar] = Decoder.forProduct2("i", "s")(Bar.apply)
-    val encodeBar: Encoder[Bar] = Encoder.forProduct2("i", "s") {
+    implicit val decodeBar: Decoder[Bar] = Decoder.forProduct2("i", "s")(Bar.apply)
+    implicit val encodeBar: Encoder[Bar] = Encoder.forProduct2("i", "s") {
       case Bar(i, s) => (i, s)
     }
   }
@@ -111,8 +111,8 @@ package examples {
       } yield Bam(w, d)
     )
 
-    val decodeBam: Decoder[Bam] = Decoder.forProduct2("w", "d")(Bam.apply)(Wub.decodeWub, implicitly)
-    val encodeBam: Encoder[Bam] = Encoder.forProduct2[Bam, Wub, Double]("w", "d") {
+    implicit val decodeBam: Decoder[Bam] = Decoder.forProduct2("w", "d")(Bam.apply)(Wub.decodeWub, implicitly)
+    implicit val encodeBam: Encoder[Bam] = Encoder.forProduct2[Bam, Wub, Double]("w", "d") {
       case Bam(w, d) => (w, d)
     }(Wub.encodeWub, implicitly)
   }

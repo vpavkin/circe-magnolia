@@ -2,9 +2,6 @@ package io.circe.magnolia
 
 import cats.kernel.Eq
 import cats.syntax.AllSyntax
-import io.circe.magnolia.derivation.decoder.auto._
-import io.circe.magnolia.derivation.encoder.auto._
-import io.circe.{Decoder, Encoder}
 import org.scalacheck.{Arbitrary, Gen}
 import org.scalacheck.Arbitrary.arbitrary
 
