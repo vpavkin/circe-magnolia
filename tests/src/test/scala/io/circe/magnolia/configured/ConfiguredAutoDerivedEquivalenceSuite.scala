@@ -6,7 +6,6 @@ import io.circe.{Decoder, Encoder}
 import io.circe.magnolia.tags.{Circe, Magnolia}
 import io.circe.generic.extras.{Configuration => GeConfiguration}
 import io.circe.magnolia.CodecEquivalenceTests
-import io.circe.magnolia.configured.ConfiguredAutoDerivedEquivalenceSuite.{CirceCodecs, MagnoliaCodecs}
 import io.circe.magnolia.AutoDerivedSuiteInputs._
 import io.circe.magnolia.tags._
 import shapeless.tag.@@
@@ -14,38 +13,7 @@ import shapeless.tag
 
 class ConfiguredAutoDerivedEquivalenceSuite extends CirceSuite {
 
-  testWithConfiguration("with default configuration", Configuration.default)
-  testWithConfiguration("with snake case configuration", Configuration.default.withSnakeCaseConstructorNames.withSnakeCaseMemberNames)
-  testWithConfiguration("with useDefault = true", Configuration.default.copy(useDefaults = true))
-
-  //TODOO: move
-  def testWithConfiguration(postfix: String, configuration: Configuration): Unit = {
-    val magnoliaCodecs = new MagnoliaCodecs(configuration)
-    val circeCodecs = new CirceCodecs(toGenericExtrasConfig(configuration))
-
-    import magnoliaCodecs._
-    import circeCodecs._
-
-    checkLaws(s"Codec[AnyValInside] $postfix", CodecEquivalenceTests.useTagged[AnyValInside].codecEquivalence)
-    checkLaws(s"Codec[Qux[Int]] $postfix", CodecEquivalenceTests.useTagged[Qux[Int]].codecEquivalence)
-    checkLaws(s"Codec[Seq[Foo]] $postfix", CodecEquivalenceTests.useTagged[Seq[Foo]].codecEquivalence)
-    checkLaws(s"Codec[Baz] $postfix", CodecEquivalenceTests.useTagged[Baz].codecEquivalence)
-    checkLaws(s"Codec[Foo] $postfix", CodecEquivalenceTests.useTagged[Foo].codecEquivalence)
-    checkLaws(s"Codec[OuterCaseClassExample] $postfix", CodecEquivalenceTests.useTagged[OuterCaseClassExample].codecEquivalence)
-    checkLaws(s"Codec[RecursiveAdtExample] $postfix", CodecEquivalenceTests.useTagged[RecursiveAdtExample].codecEquivalence)
-    checkLaws(s"Codec[RecursiveWithOptionExample] $postfix", CodecEquivalenceTests.useTagged[RecursiveWithOptionExample].codecEquivalence)
-    // TODO: disabled due to https://github.com/circe/circe-magnolia/issues/3
-    // checkLaws(s"Codec[WithTaggedMembers] $postfix", CodecEquivalenceTests.useTagged[WithTaggedMembers].codecEquivalence)
-    checkLaws(s"Codec[Seq[WithSeqOfTagged]] $postfix", CodecEquivalenceTests.useTagged[Seq[WithSeqOfTagged]].codecEquivalence)
-    checkLaws(s"Codec[RecursiveWithListExample] $postfix", CodecEquivalenceTests.useTagged[RecursiveWithListExample].codecEquivalence)
-    checkLaws(s"Codec[ClassWithDefaults] $postfix", CodecEquivalenceTests.useTagged[ClassWithDefaults].codecEquivalence)
-    checkLaws(s"Codec[ClassWithJsonKey] $postfix", CodecEquivalenceTests.useTagged[ClassWithJsonKey].codecEquivalence)
-  }
-
-}
-
-object ConfiguredAutoDerivedEquivalenceSuite {
-  class MagnoliaCodecs(config: Configuration) {
+  private class MagnoliaCodecs(config: Configuration) {
     implicit val configuration: Configuration = config
 
     import io.circe.tests.examples.Baz._
@@ -91,7 +59,7 @@ object ConfiguredAutoDerivedEquivalenceSuite {
 
   }
 
-  class CirceCodecs(config: GeConfiguration) {
+  private class CirceCodecs(config: GeConfiguration) {
 
     implicit val configuration: GeConfiguration = config
     import io.circe.generic.extras.auto._
@@ -132,4 +100,33 @@ object ConfiguredAutoDerivedEquivalenceSuite {
     implicit val circeDecoder13: TaggedDecoder[Circe, ClassWithDefaults] = mkTag[Circe](Decoder[ClassWithDefaults])
     implicit val circeDecoder14: TaggedDecoder[Circe, ClassWithJsonKey] = mkTag[Circe](Decoder[ClassWithJsonKey])
   }
+
+  //TODOO: move
+  def testWithConfiguration(postfix: String, configuration: Configuration): Unit = {
+    val magnoliaCodecs = new MagnoliaCodecs(configuration)
+    val circeCodecs = new CirceCodecs(toGenericExtrasConfig(configuration))
+
+    import magnoliaCodecs._
+    import circeCodecs._
+
+    checkLaws(s"Codec[AnyValInside] $postfix", CodecEquivalenceTests.useTagged[AnyValInside].codecEquivalence)
+    checkLaws(s"Codec[Qux[Int]] $postfix", CodecEquivalenceTests.useTagged[Qux[Int]].codecEquivalence)
+    checkLaws(s"Codec[Seq[Foo]] $postfix", CodecEquivalenceTests.useTagged[Seq[Foo]].codecEquivalence)
+    checkLaws(s"Codec[Baz] $postfix", CodecEquivalenceTests.useTagged[Baz].codecEquivalence)
+    checkLaws(s"Codec[Foo] $postfix", CodecEquivalenceTests.useTagged[Foo].codecEquivalence)
+    checkLaws(s"Codec[OuterCaseClassExample] $postfix", CodecEquivalenceTests.useTagged[OuterCaseClassExample].codecEquivalence)
+    checkLaws(s"Codec[RecursiveAdtExample] $postfix", CodecEquivalenceTests.useTagged[RecursiveAdtExample].codecEquivalence)
+    checkLaws(s"Codec[RecursiveWithOptionExample] $postfix", CodecEquivalenceTests.useTagged[RecursiveWithOptionExample].codecEquivalence)
+    // TODO: disabled due to https://github.com/circe/circe-magnolia/issues/3
+    // checkLaws(s"Codec[WithTaggedMembers] $postfix", CodecEquivalenceTests.useTagged[WithTaggedMembers].codecEquivalence)
+    checkLaws(s"Codec[Seq[WithSeqOfTagged]] $postfix", CodecEquivalenceTests.useTagged[Seq[WithSeqOfTagged]].codecEquivalence)
+    checkLaws(s"Codec[RecursiveWithListExample] $postfix", CodecEquivalenceTests.useTagged[RecursiveWithListExample].codecEquivalence)
+    checkLaws(s"Codec[ClassWithDefaults] $postfix", CodecEquivalenceTests.useTagged[ClassWithDefaults].codecEquivalence)
+    checkLaws(s"Codec[ClassWithJsonKey] $postfix", CodecEquivalenceTests.useTagged[ClassWithJsonKey].codecEquivalence)
+  }
+
+  testWithConfiguration("with default configuration", Configuration.default)
+  testWithConfiguration("with snake case configuration", Configuration.default.withSnakeCaseConstructorNames.withSnakeCaseMemberNames)
+  testWithConfiguration("with useDefault = true", Configuration.default.copy(useDefaults = true))
+
 }
