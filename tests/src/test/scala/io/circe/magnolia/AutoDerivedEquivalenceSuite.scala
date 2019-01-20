@@ -4,12 +4,21 @@ import io.circe.tests.CirceSuite
 import io.circe.tests.examples._
 import io.circe.{Decoder, Encoder}
 import shapeless.tag
+import shapeless.tag.@@
 import tags._
 
 class AutoDerivedEquivalenceSuite extends CirceSuite {
   import AutoDerivedSuiteInputs._
 
   object magnolia {
+
+    private implicit val encodeIntTag1: Encoder[List[Int] @@ Tag1] = Encoder[List[Int]].narrow
+    private implicit val encodeStringTag2: Encoder[String @@ Tag2] = Encoder[String].narrow
+    private implicit val decodeIntTag1: Decoder[List[Int] @@ Tag1] = Decoder[List[Int]].map(tag[Tag1](_))
+    private implicit val decodeStringTag2: Decoder[String @@ Tag2] = Decoder[String].map(tag[Tag2](_))
+
+    private implicit val encodeStringTag: Encoder[String @@ Tag] = Encoder[String].narrow
+    private implicit val decodeStringTag: Decoder[String @@ Tag] = Decoder[String].map(tag[Tag](_))
 
     // TODO: This is a temporary workaround for https://github.com/propensive/magnolia/issues/89
     import Baz._
@@ -43,6 +52,14 @@ class AutoDerivedEquivalenceSuite extends CirceSuite {
   }
 
   object circe {
+
+    private implicit val encodeIntTag1: Encoder[List[Int] @@ Tag1] = Encoder[List[Int]].narrow
+    private implicit val encodeStringTag2: Encoder[String @@ Tag2] = Encoder[String].narrow
+    private implicit val decodeIntTag1: Decoder[List[Int] @@ Tag1] = Decoder[List[Int]].map(tag[Tag1](_))
+    private implicit val decodeStringTag2: Decoder[String @@ Tag2] = Decoder[String].map(tag[Tag2](_))
+
+    private implicit val encodeStringTag: Encoder[String @@ Tag] = Encoder[String].narrow
+    private implicit val decodeStringTag: Decoder[String @@ Tag] = Decoder[String].map(tag[Tag](_))
 
     import io.circe.generic.auto._
 

@@ -4,8 +4,8 @@ import io.circe.{Decoder, Encoder}
 import shapeless.tag.@@
 
 object tags {
-  sealed trait Magnolia
-  sealed trait Circe
+  trait Magnolia
+  trait Circe
 
   final class TaggedDecoder[T, A](val inner: Decoder[A]) extends AnyVal {
     def toTagged: Decoder[A] @@ T = {
@@ -23,6 +23,6 @@ object tags {
     def apply[A](encoder: Encoder[A]): TaggedEncoder[T, A] = new TaggedEncoder(encoder)
   }
 
-  def tag[T]: PartialTagged[T] = new PartialTagged[T]
+  def mkTag[T]: PartialTagged[T] = new PartialTagged[T]
 
 }

@@ -6,6 +6,8 @@ import io.circe.testing.CodecTests
 import io.circe.tests.CirceSuite
 import io.circe.tests.examples._
 import io.circe.{Decoder, Encoder, Json}
+import shapeless.tag
+import shapeless.tag.@@
 import shapeless.test.illTyped
 
 class AutoDerivedSuite extends CirceSuite {
@@ -15,6 +17,9 @@ class AutoDerivedSuite extends CirceSuite {
   import Baz._
   import Encoder._
   import Decoder._
+
+  private implicit val encodeStringTag: Encoder[String @@ Tag] = Encoder[String].narrow
+  private implicit val decodeStringTag: Decoder[String @@ Tag] = Decoder[String].map(tag[Tag](_))
 
   checkLaws("Codec[Tuple1[Int]]", CodecTests[Tuple1[Int]].unserializableCodec)
   checkLaws("Codec[(Int, Int, Foo)]", CodecTests[(Int, Int, Foo)].unserializableCodec)

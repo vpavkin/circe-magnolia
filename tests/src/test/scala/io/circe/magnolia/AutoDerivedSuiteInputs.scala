@@ -102,11 +102,6 @@ object AutoDerivedSuiteInputs extends AllSyntax {
   trait Tag2
   case class WithTaggedMembers(i: List[Int] @@ Tag1, s: String @@ Tag2)
 
-  implicit val encodeIntTag1: Encoder[List[Int] @@ Tag1] = Encoder[List[Int]].narrow
-  implicit val encodeStringTag2: Encoder[String @@ Tag2] = Encoder[String].narrow
-  implicit val decodeIntTag1: Decoder[List[Int] @@ Tag1] = Decoder[List[Int]].map(tag[Tag1](_))
-  implicit val decodeStringTag2: Decoder[String @@ Tag2] = Decoder[String].map(tag[Tag2](_))
-
   object WithTaggedMembers {
     implicit val eqWithTaggedMembers: Eq[WithTaggedMembers] = Eq.fromUniversalEquals
 
@@ -120,9 +115,6 @@ object AutoDerivedSuiteInputs extends AllSyntax {
 
   trait Tag
   case class WithSeqOfTagged(s: Vector[String @@ Tag])
-
-  implicit val encodeStringTag: Encoder[String @@ Tag] = Encoder[String].narrow
-  implicit val decodeStringTag: Decoder[String @@ Tag] = Decoder[String].map(tag[Tag](_))
 
   object WithSeqOfTagged {
     implicit val eqSeqOfWithSeqOfTagged: Eq[Seq[WithSeqOfTagged]] = Eq.fromUniversalEquals
