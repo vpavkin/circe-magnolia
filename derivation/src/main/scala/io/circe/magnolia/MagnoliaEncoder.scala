@@ -26,7 +26,7 @@ private[magnolia] object MagnoliaEncoder {
     new Encoder[T] {
       def apply(a: T): Json =
         Json.obj(caseClass.parameters.map { p =>
-          val label = paramJsonKeyLookup.get(p.label).get
+          val label = paramJsonKeyLookup.get(p.label).getOrElse(throw new Exception("ohno"))
           label -> p.typeclass(p.dereference(a))
         }: _*)
     }
@@ -54,7 +54,12 @@ private[magnolia] object MagnoliaEncoder {
             .transformConstructorNames(subtype.typeName.short)
           config.discriminator match {
             case Some(discriminator) => {
-              Json.fromJsonObject(baseJson.asObject.get.add(discriminator, Json.fromString(constructorName)))
+              val asObj = baseJson.asObject
+              if (asObj.isEmpty) {
+                println(a)
+              }
+              //TODOO: We are assuming object encoder. Can we enforce this?
+              Json.fromJsonObject(asObj.get.add(discriminator, Json.fromString(constructorName)))
             }
             case None =>
               Json.obj(constructorName -> baseJson)

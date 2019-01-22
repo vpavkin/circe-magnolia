@@ -1,6 +1,6 @@
 package io.circe.magnolia
 
-import io.circe.{Decoder, Encoder, ObjectEncoder}
+import io.circe.{Decoder, Encoder}
 import io.circe.tests.CirceSuite
 import io.circe.tests.examples._
 import shapeless.tag

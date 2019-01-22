@@ -85,7 +85,6 @@ class ConfiguredAutoDerivedEquivalenceSuite extends CirceSuite {
     implicit val circeDecoder14: TaggedDecoder[Circe, ClassWithJsonKey] = mkTag[Circe](deriveDecoder[ClassWithJsonKey])
   }
 
-  //TODOO: move
   def testWithConfiguration(postfix: String, configuration: Configuration): Unit = {
     val magnoliaCodecs = new MagnoliaCodecs(configuration)
     val circeCodecs = new CirceCodecs(toGenericExtrasConfig(configuration))
@@ -109,5 +108,6 @@ class ConfiguredAutoDerivedEquivalenceSuite extends CirceSuite {
   testWithConfiguration("with default configuration", Configuration.default)
   testWithConfiguration("with snake case configuration", Configuration.default.withSnakeCaseConstructorNames.withSnakeCaseMemberNames)
   testWithConfiguration("with useDefault = true", Configuration.default.copy(useDefaults = true))
+  testWithConfiguration("with discriminator", Configuration.default.copy(discriminator = Some("type")))
 
 }

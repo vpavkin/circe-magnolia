@@ -32,7 +32,7 @@ private[magnolia] object MagnoliaDecoder {
       new Decoder[T] {
         override def apply(c: HCursor): Result[T] = {
           caseClass.constructMonadic { p =>
-            val key = paramJsonKeyLookup.get(p.label).get // Lookup should always succeed
+            val key = paramJsonKeyLookup.get(p.label).getOrElse(throw new Exception("boo")) // Lookup should always succeed
             val keyCursor = c.downField(key)
             keyCursor.focus match {
               case Some(json) => json.as[p.PType](p.typeclass)
@@ -47,7 +47,7 @@ private[magnolia] object MagnoliaDecoder {
         def apply(c: HCursor): Result[T] = {
           caseClass.constructMonadic(
             p =>
-              c.downField(paramJsonKeyLookup.get(p.label).get) // Lookup should always succeed
+              c.downField(paramJsonKeyLookup.get(p.label).getOrElse(throw new Exception("nope"))) // Lookup should always succeed
                 .as[p.PType](p.typeclass)
           )
         }

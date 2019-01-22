@@ -128,6 +128,7 @@ class ConfiguredSemiautoDerivedEquivalenceSuite extends CirceSuite {
   testWithConfiguration("with default configuration", Configuration.default)
   testWithConfiguration("with snake case configuration", Configuration.default.withSnakeCaseConstructorNames.withSnakeCaseMemberNames)
   testWithConfiguration("with useDefault = true", Configuration.default.copy(useDefaults = true))
+  testWithConfiguration("with discriminator", Configuration.default.copy(discriminator = Some("type")))
 
 }
 

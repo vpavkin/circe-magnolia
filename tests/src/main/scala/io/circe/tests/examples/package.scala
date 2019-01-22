@@ -72,7 +72,6 @@ package examples {
 
   sealed trait Foo
   case class Bar(i: Int, s: String) extends Foo
-  case class Baz(xs: List[String]) extends Foo
   case class Bam(w: Wub, d: Double) extends Foo
 
   object Bar {
@@ -89,6 +88,8 @@ package examples {
       case Bar(i, s) => (i, s)
     }
   }
+
+  case class Baz(xs: List[String])
 
   object Baz {
     implicit val eqBaz: Eq[Baz] = Eq.fromUniversalEquals
@@ -123,21 +124,18 @@ package examples {
     implicit val arbitraryFoo: Arbitrary[Foo] = Arbitrary(
       Gen.oneOf(
         Arbitrary.arbitrary[Bar],
-        Arbitrary.arbitrary[Baz],
         Arbitrary.arbitrary[Bam]
       )
     )
 
     val encodeFoo: Encoder[Foo] = Encoder.instance {
       case bar@Bar(_, _) => Json.obj("Bar" -> Bar.encodeBar(bar))
-      case baz@Baz(_) => Json.obj("Baz" -> Baz.encodeBaz(baz))
       case bam@Bam(_, _) => Json.obj("Bam" -> Bam.encodeBam(bam))
     }
 
     val decodeFoo: Decoder[Foo] = Decoder.instance { c =>
       c.keys.map(_.toVector) match {
         case Some(Vector("Bar")) => c.get("Bar")(Bar.decodeBar.widen)
-        case Some(Vector("Baz")) => c.get("Baz")(Baz.decodeBaz.widen)
         case Some(Vector("Bam")) => c.get("Bam")(Bam.decodeBam.widen)
         case _ => Left(DecodingFailure("Foo", c.history))
       }
