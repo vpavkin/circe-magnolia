@@ -166,7 +166,6 @@ class ConfiguredSemiautoDerivedSuite extends CirceSuite with Inside {
     }
   }
 
-  //TODOO: align test case descriptions
   "Decoder derivation" should "fail if transforming parameter names results in duplicate JSON keys" in {
     implicit val config = Configuration.default.copy(transformMemberNames = _ => "sameKey")
 

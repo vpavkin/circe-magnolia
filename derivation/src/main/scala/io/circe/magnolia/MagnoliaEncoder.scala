@@ -26,7 +26,7 @@ private[magnolia] object MagnoliaEncoder {
     new Encoder[T] {
       def apply(a: T): Json =
         Json.obj(caseClass.parameters.map { p =>
-          val label = paramJsonKeyLookup.get(p.label).getOrElse(throw new Exception("ohno"))
+          val label = paramJsonKeyLookup.getOrElse(p.label, throw new IllegalStateException("Looking up a parameter label should always yield a value. This is a bug"))
           label -> p.typeclass(p.dereference(a))
         }: _*)
     }
