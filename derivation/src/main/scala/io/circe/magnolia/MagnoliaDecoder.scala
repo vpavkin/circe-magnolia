@@ -58,25 +58,24 @@ private[magnolia] object MagnoliaDecoder {
   private[magnolia] def dispatch[T](
     sealedTrait: SealedTrait[Decoder, T]
   )(implicit configuration: Configuration): Decoder[T] = {
-    configuration.discriminator match {
-      case Some(discriminator) => new DiscriminatedDecoder[T](sealedTrait, discriminator, configuration.transformConstructorNames)
-      case None => new NonDiscriminatedDecoder[T](sealedTrait, configuration.transformConstructorNames)
-    }
-  }
 
-  private[magnolia] def makeCtorToSubtypeLookup[T](sealedTrait: SealedTrait[Decoder, T], constructorTransformer: String => String): Map[String, Subtype[Decoder, T]] = {
-    sealedTrait.subtypes.map { s =>
-      constructorTransformer(s.typeName.short) -> s
-    }.toMap
-  }
-
-  private[magnolia] class NonDiscriminatedDecoder[T](sealedTrait: SealedTrait[Decoder, T], constructorTransformer: String => String) extends Decoder[T] {
-    val constructorLookup: Map[String, Subtype[Decoder, T]] = makeCtorToSubtypeLookup(sealedTrait, constructorTransformer)
-    val knownSubTypes = constructorLookup.keys.toSeq.sorted.mkString(",")
+    val constructorLookup: Map[String, Subtype[Decoder, T]] =
+      sealedTrait.subtypes.map { s =>
+        configuration.transformConstructorNames(s.typeName.short) -> s
+      }.toMap
 
     if (constructorLookup.size != sealedTrait.subtypes.length) {
       throw new DerivationError("Duplicate key detected after applying transformation function for case class parameters")
     }
+
+    configuration.discriminator match {
+      case Some(discriminator) => new DiscriminatedDecoder[T](discriminator, constructorLookup)
+      case None => new NonDiscriminatedDecoder[T](constructorLookup)
+    }
+  }
+
+  private[magnolia] class NonDiscriminatedDecoder[T](constructorLookup: Map[String, Subtype[Decoder, T]]) extends Decoder[T] {
+    private val knownSubTypes = constructorLookup.keys.toSeq.sorted.mkString(",")
 
     override def apply(c: HCursor): Result[T] = {
       c.keys match {
@@ -110,14 +109,8 @@ private[magnolia] object MagnoliaDecoder {
     }
   }
 
-  //TODOO: Use common validators
-  private[magnolia] class DiscriminatedDecoder[T](sealedTrait: SealedTrait[Decoder, T], discriminator: String, constructorTransformer: String => String) extends Decoder[T] {
-    val constructorLookup: Map[String, Subtype[Decoder, T]] = makeCtorToSubtypeLookup(sealedTrait, constructorTransformer)
+  private[magnolia] class DiscriminatedDecoder[T](discriminator: String, constructorLookup: Map[String, Subtype[Decoder, T]]) extends Decoder[T] {
     val knownSubTypes = constructorLookup.keys.toSeq.sorted.mkString(",")
-
-    if (constructorLookup.size != sealedTrait.subtypes.length) {
-      throw new DerivationError("Duplicate key detected after applying transformation function for case class parameters")
-    }
 
     override def apply(c: HCursor): Result[T] = {
       c.downField(discriminator).as[String] match {

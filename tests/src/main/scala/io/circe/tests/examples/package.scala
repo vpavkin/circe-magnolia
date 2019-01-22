@@ -142,7 +142,6 @@ package examples {
     }
   }
 
-  //TODOO: do we need this?
   sealed trait Organization
   final case class Public(name: String, taxCategory: String) extends Organization
   final case class NonProfit(orgName: String) extends Organization
