@@ -54,12 +54,13 @@ private[magnolia] object MagnoliaEncoder {
             .transformConstructorNames(subtype.typeName.short)
           config.discriminator match {
             case Some(discriminator) => {
-              val asObj = baseJson.asObject
-              if (asObj.isEmpty) {
-                println(a)
+              // Note: Here we handle the edge case where a subtype of a sealed trait has a custom encoder which does not encode
+              // encode into a JSON object and thus we cannot insert the discriminator key. In this case we fallback
+              // to the non-discriminator case for this subtype. This is inline with the behaviour of generic-extras
+              baseJson.asObject match {
+                case Some(jsObj) => Json.fromJsonObject(jsObj.add(discriminator, Json.fromString(constructorName)))
+                case None => Json.obj(constructorName -> baseJson)
               }
-              //TODOO: We are assuming object encoder. Can we enforce this?
-              Json.fromJsonObject(asObj.get.add(discriminator, Json.fromString(constructorName)))
             }
             case None =>
               Json.obj(constructorName -> baseJson)
