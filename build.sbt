@@ -71,13 +71,13 @@ lazy val allSettings = buildSettings ++ compilerSettings ++ publishSettings
 
 lazy val coreDependencies = libraryDependencies ++= Seq(
   "io.circe" %%% "circe-core" % circeVersion,
-  "io.circe" %%% "circe-parser" % circeVersion,
   "com.propensive" %%% "magnolia" % magnoliaVersion,
   "com.propensive" %%% "mercator" % mercatorVersion
 )
 
 lazy val testDependencies = libraryDependencies ++= Seq(
   "com.chuusai" %% "shapeless" % shapelessVersion,
+  "io.circe" %%% "circe-parser" % circeVersion,
   "io.circe" %%% "circe-generic" % circeVersion,
   "io.circe" %%% "circe-generic-extras" % circeVersion,
   "io.circe" %%% "circe-testing" % circeVersion,
