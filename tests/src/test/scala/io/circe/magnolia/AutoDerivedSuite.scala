@@ -1,16 +1,14 @@
 package io.circe.magnolia
 
-import io.circe.magnolia.AutoDerivedSuite.{ChildList, Sealed}
 import io.circe.magnolia.derivation.decoder.auto._
 import io.circe.magnolia.derivation.encoder.auto._
 import io.circe.testing.CodecTests
 import io.circe.tests.CirceSuite
 import io.circe.tests.examples._
-import io.circe.{Decoder, Encoder, HCursor, Json}
+import io.circe.{Decoder, Encoder, Json}
 import shapeless.tag
 import shapeless.tag.@@
 import shapeless.test.illTyped
-import cats.Eq
 
 class AutoDerivedSuite extends CirceSuite {
   import AutoDerivedSuiteInputs._
@@ -51,37 +49,19 @@ class AutoDerivedSuite extends CirceSuite {
   }
 
   "Generic decoders" should "not interfere with defined decoders" in forAll { (xs: List[String]) =>
-    val json = Json.obj("ChildList" -> Json.fromValues(xs.map(Json.fromString)))
+    val json = Json.obj("SubtypeWithExplicitInstance" -> Json.fromValues(xs.map(Json.fromString)))
     val ch = Decoder[Sealed].apply(json.hcursor)
-    val res = ch === Right(ChildList(xs): Sealed)
+    val res = ch === Right(SubtypeWithExplicitInstance(xs): Sealed)
     assert(res)
   }
 
   "Generic encoders" should "not interfere with defined encoders" in forAll { (xs: List[String]) =>
-    val json = Json.obj("ChildList" -> Json.fromValues(xs.map(Json.fromString)))
+    val json = Json.obj("SubtypeWithExplicitInstance" -> Json.fromValues(xs.map(Json.fromString)))
 
-    assert(Encoder[Sealed].apply(ChildList(xs): Sealed) === json)
+    assert(Encoder[Sealed].apply(SubtypeWithExplicitInstance(xs): Sealed) === json)
   }
 
   // TODO: tagged types don't work ATM, might be related to https://github.com/propensive/magnolia/issues/89
   //  checkLaws("Codec[WithTaggedMembers]", CodecTests[WithTaggedMembers].unserializableCodec)
   checkLaws("Codec[Seq[WithSeqOfTagged]]", CodecTests[Seq[WithSeqOfTagged]].unserializableCodec)
-}
-
-object AutoDerivedSuite {
-  // TODO: temporary workaround for https://github.com/propensive/magnolia/issues/89
-  import Decoder._
-
-  sealed trait Sealed
-  final case class ChildList(xs: List[String]) extends Sealed
-  final case class ChildOther(i: Int) extends Sealed
-
-  object Sealed {
-    implicit val eq: Eq[Sealed] = Eq.fromUniversalEquals
-  }
-
-  object ChildList {
-    implicit val encode: Encoder[ChildList] = (a: ChildList) => Json.fromValues(a.xs.map(Json.fromString))
-    implicit val decode: Decoder[ChildList] = (a: HCursor) => a.as[List[String]].map(ChildList(_))
-  }
 }

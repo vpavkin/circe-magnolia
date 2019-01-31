@@ -37,6 +37,7 @@ class ConfiguredSemiautoDerivedSuite extends CirceSuite with Inside {
     inside(SnakeCaseAndDiscriminator.decoder(input.hcursor)) {
       case Left(e) => {
         assert(e.message.contains("couldn't find discriminator or is not of type String."))
+        assert(e.history.isEmpty)
       }
     }
   }
@@ -55,6 +56,7 @@ class ConfiguredSemiautoDerivedSuite extends CirceSuite with Inside {
     inside(SnakeCaseAndDiscriminator.decoder(input.hcursor)) {
       case Left(e) => {
         assert(e.message.contains("couldn't find discriminator or is not of type String."))
+        assert(e.history.isEmpty)
       }
     }
   }

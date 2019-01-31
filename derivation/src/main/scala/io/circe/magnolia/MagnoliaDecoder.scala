@@ -12,8 +12,6 @@ private[magnolia] object MagnoliaDecoder {
   private[magnolia] def combine[T](
     caseClass: CaseClass[Decoder, T]
   )(implicit configuration: Configuration): Decoder[T] = {
-    // Ideally CaseClass should provide a way to attach extra data to each Param
-    // to avoid the need for lookups
     val paramJsonKeyLookup: Map[String, String] = caseClass.parameters.map{ p =>
       val jsonKeyAnnotation = p.annotations.collectFirst {
         case ann: JsonKey => ann

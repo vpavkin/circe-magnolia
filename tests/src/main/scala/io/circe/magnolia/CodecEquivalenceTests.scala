@@ -59,6 +59,20 @@ trait CodecEquivalenceTests[A] extends Laws {
       laws.decoderEq(a)
     }
   )
+
+  // Use codecEquivalence if possible. Use only when only
+  // derived Encoder can be equivalent and should be documented
+  def encoderEquivalence(
+    implicit
+    arbitraryA: Arbitrary[A],
+    shrinkA: Shrink[A]
+    ): RuleSet = new DefaultRuleSet(
+    name = "codec equality",
+    parent = None,
+    "encoder equivalence" -> Prop.forAll { (a: A) =>
+      laws.encoderEq(a)
+    },
+  )
 }
 
 object CodecEquivalenceTests {

@@ -38,6 +38,8 @@ package object examples extends AllInstances with ArbitraryInstances {
 
 package examples {
 
+  import io.circe.HCursor
+
   case class Box[A](a: A)
 
   object Box {
@@ -83,8 +85,8 @@ package examples {
       } yield Bar(i, s)
     )
 
-    implicit val decodeBar: Decoder[Bar] = Decoder.forProduct2("i", "s")(Bar.apply)
-    implicit val encodeBar: Encoder[Bar] = Encoder.forProduct2("i", "s") {
+    val decodeBar: Decoder[Bar] = Decoder.forProduct2("i", "s")(Bar.apply)
+    val encodeBar: Encoder[Bar] = Encoder.forProduct2("i", "s") {
       case Bar(i, s) => (i, s)
     }
   }
@@ -112,8 +114,8 @@ package examples {
       } yield Bam(w, d)
     )
 
-    implicit val decodeBam: Decoder[Bam] = Decoder.forProduct2("w", "d")(Bam.apply)(Wub.decodeWub, implicitly)
-    implicit val encodeBam: Encoder[Bam] = Encoder.forProduct2[Bam, Wub, Double]("w", "d") {
+    val decodeBam: Decoder[Bam] = Decoder.forProduct2("w", "d")(Bam.apply)(Wub.decodeWub, implicitly)
+    val encodeBam: Encoder[Bam] = Encoder.forProduct2[Bam, Wub, Double]("w", "d") {
       case Bam(w, d) => (w, d)
     }(Wub.encodeWub, implicitly)
   }
@@ -140,6 +142,33 @@ package examples {
         case _ => Left(DecodingFailure("Foo", c.history))
       }
     }
+  }
+
+  sealed trait Sealed
+  final case class SubtypeWithExplicitInstance(xs: List[String]) extends Sealed
+  final case class AnotherSubtype(i: Int) extends Sealed
+
+  object Sealed {
+    implicit val arbitrary: Arbitrary[Sealed] = Arbitrary(Gen.oneOf(
+      Arbitrary.arbitrary[SubtypeWithExplicitInstance],
+      Arbitrary.arbitrary[AnotherSubtype]
+    ))
+    implicit val eq: Eq[Sealed] = Eq.fromUniversalEquals
+  }
+
+  object SubtypeWithExplicitInstance {
+    implicit val arbitrary: Arbitrary[SubtypeWithExplicitInstance] = Arbitrary(for {
+      strs <- Arbitrary.arbitrary[List[String]]
+    } yield  SubtypeWithExplicitInstance(strs))
+
+    implicit val encode: Encoder[SubtypeWithExplicitInstance] = (a: SubtypeWithExplicitInstance) => Json.fromValues(a.xs.map(Json.fromString))
+    implicit val decode: Decoder[SubtypeWithExplicitInstance] = (a: HCursor) => a.as[List[String]].map(SubtypeWithExplicitInstance(_))
+  }
+
+  object AnotherSubtype {
+    implicit val arbitrary: Arbitrary[AnotherSubtype] = Arbitrary(for {
+     i <- Arbitrary.arbitrary[Int]
+    } yield AnotherSubtype(i))
   }
 
   sealed trait Organization

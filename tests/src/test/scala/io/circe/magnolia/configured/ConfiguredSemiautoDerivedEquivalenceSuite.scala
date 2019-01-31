@@ -8,14 +8,14 @@ import io.circe.generic.extras.{Configuration => GeConfiguration}
 import io.circe.magnolia.CodecEquivalenceTests
 import io.circe.magnolia.SemiautoDerivedSuiteInputs._
 import io.circe.magnolia.tags._
+import io.circe.magnolia.configured.decoder.semiauto.deriveConfiguredMagnoliaDecoder
+import io.circe.magnolia.configured.encoder.semiauto.deriveConfiguredMagnoliaEncoder
+import io.circe.parser.parse
 
 class ConfiguredSemiautoDerivedEquivalenceSuite extends CirceSuite {
 
   private class MagnoliaCodecs(config: Configuration) {
     implicit val configuration: Configuration = config
-
-    import io.circe.magnolia.configured.decoder.semiauto.deriveConfiguredMagnoliaDecoder
-    import io.circe.magnolia.configured.encoder.semiauto.deriveConfiguredMagnoliaEncoder
 
     implicit val magnoliaEncoder3: TaggedEncoder[Magnolia, Box[Int]] = mkTag[Magnolia](deriveConfiguredMagnoliaEncoder[Box[Int]])
     implicit val magnoliaEncoder4: TaggedEncoder[Magnolia, Qux[Int]] = mkTag[Magnolia](deriveConfiguredMagnoliaEncoder[Qux[Int]])
@@ -25,10 +25,11 @@ class ConfiguredSemiautoDerivedEquivalenceSuite extends CirceSuite {
     implicit val magnoliaEncoder10: TaggedEncoder[Magnolia, Bam] = mkTag[Magnolia](deriveConfiguredMagnoliaEncoder[Bam])
     private implicit val encodeFoo: Encoder[Foo] = deriveConfiguredMagnoliaEncoder[Foo]
     implicit val magnoliaEncoder7: TaggedEncoder[Magnolia, Foo] = mkTag[Magnolia](encodeFoo)
+    implicit val magnoliaEncoderSealed: TaggedEncoder[Magnolia, Sealed] = mkTag[Magnolia](deriveConfiguredMagnoliaEncoder[Sealed])
     implicit val magnoliaEncoder20: TaggedEncoder[Magnolia, Seq[Foo]] = mkTag[Magnolia](Encoder.encodeSeq(magnoliaEncoder7.inner))
     private implicit val encodeRecursiveAdtExample: Encoder[RecursiveAdtExample] = deriveConfiguredMagnoliaEncoder[RecursiveAdtExample]
     implicit val magnoliaEncoder8: TaggedEncoder[Magnolia, RecursiveAdtExample] = mkTag[Magnolia](encodeRecursiveAdtExample)
-    private implicit  val encodeRecursiveWithOptionExample: Encoder[RecursiveWithOptionExample] = deriveConfiguredMagnoliaEncoder[RecursiveWithOptionExample]
+    private implicit val encodeRecursiveWithOptionExample: Encoder[RecursiveWithOptionExample] = deriveConfiguredMagnoliaEncoder[RecursiveWithOptionExample]
     implicit val magnoliaEncoder9: TaggedEncoder[Magnolia, RecursiveWithOptionExample] = mkTag[Magnolia](encodeRecursiveWithOptionExample)
     implicit val magnoliaEncoder1: TaggedEncoder[Magnolia, AnyValInside] = mkTag[Magnolia](deriveConfiguredMagnoliaEncoder[AnyValInside])
     implicit val magnoliaEncoder13: TaggedEncoder[Magnolia, ClassWithDefaults] = mkTag[Magnolia](deriveConfiguredMagnoliaEncoder[ClassWithDefaults])
@@ -41,10 +42,11 @@ class ConfiguredSemiautoDerivedEquivalenceSuite extends CirceSuite {
     implicit val magnoliaDecoder10: TaggedDecoder[Magnolia, Bam] = mkTag[Magnolia](deriveConfiguredMagnoliaDecoder[Bam])
     implicit val magnoliaDecoder6: TaggedDecoder[Magnolia, Baz] = mkTag[Magnolia](deriveConfiguredMagnoliaDecoder[Baz])
     implicit val magnoliaDecoder7: TaggedDecoder[Magnolia, Foo] = mkTag[Magnolia](deriveConfiguredMagnoliaDecoder[Foo])
+    implicit val magnoliaDecoderSealed: TaggedDecoder[Magnolia, Sealed] = mkTag[Magnolia](deriveConfiguredMagnoliaDecoder[Sealed])
     implicit val magnoliaDecoder12: TaggedDecoder[Magnolia, Seq[Foo]] = mkTag[Magnolia](Decoder.decodeSeq(magnoliaDecoder7.inner))
     private implicit val decodeRecursiveAdtExample: Decoder[RecursiveAdtExample] = deriveConfiguredMagnoliaDecoder[RecursiveAdtExample]
     implicit val magnoliaDecoder8: TaggedDecoder[Magnolia, RecursiveAdtExample] = mkTag[Magnolia](decodeRecursiveAdtExample)
-    private implicit  val decodeRecursiveWithOptionExample: Decoder[RecursiveWithOptionExample] = deriveConfiguredMagnoliaDecoder[RecursiveWithOptionExample]
+    private implicit val decodeRecursiveWithOptionExample: Decoder[RecursiveWithOptionExample] = deriveConfiguredMagnoliaDecoder[RecursiveWithOptionExample]
     implicit val magnoliaDecoder9: TaggedDecoder[Magnolia, RecursiveWithOptionExample] = mkTag[Magnolia](decodeRecursiveWithOptionExample)
     implicit val magnoliaDecoder1: TaggedDecoder[Magnolia, AnyValInside] = mkTag[Magnolia](deriveConfiguredMagnoliaDecoder[AnyValInside])
     implicit val magnoliaDecoder13: TaggedDecoder[Magnolia, ClassWithDefaults] = mkTag[Magnolia](deriveConfiguredMagnoliaDecoder[ClassWithDefaults])
@@ -53,17 +55,25 @@ class ConfiguredSemiautoDerivedEquivalenceSuite extends CirceSuite {
   }
 
   private class CirceCodecs(config: GeConfiguration) {
+    import io.circe.generic.extras.semiauto.{deriveEncoder, deriveDecoder}
 
     implicit val configuration: GeConfiguration = config
-    import io.circe.generic.extras.semiauto.{deriveEncoder,deriveDecoder}
 
     implicit val circeEncoder1: TaggedEncoder[Circe, AnyValInside] = mkTag[Circe](deriveEncoder[AnyValInside])
     implicit val circeEncoder3: TaggedEncoder[Circe, Box[Int]] = mkTag[Circe](deriveEncoder[Box[Int]])
     implicit val circeEncoder4: TaggedEncoder[Circe, Qux[Int]] = mkTag[Circe](deriveEncoder[Qux[Int]])
     implicit val circeEncoder6: TaggedEncoder[Circe, Baz] = mkTag[Circe](deriveEncoder[Baz])
-    private implicit val encodeFoo: Encoder[Foo] = deriveEncoder[Foo]
-    implicit val circeEncoder7: TaggedEncoder[Circe, Foo] = mkTag[Circe](encodeFoo)
+    private implicit val encodeFoo: Encoder[Foo] = {
+      // Circe does not automatically derive instances for subtypes
+      implicit val encodeBar = Bar.encodeBar
+      implicit val encodeBam = Bam.encodeBam
+      deriveEncoder[Foo]
+    }
+    implicit val circeEncoder7: TaggedEncoder[Circe, Foo] = {
+      mkTag[Circe](encodeFoo)
+    }
     implicit val circeEncoderSeqFoo: TaggedEncoder[Circe, Seq[Foo]] = mkTag[Circe](Encoder.encodeSeq(encodeFoo))
+    implicit val circeEncoderSealed: TaggedEncoder[Circe, Sealed] = mkTag[Circe](deriveEncoder[Sealed])
     private implicit val encodeRecursiveAdtExample: Encoder[RecursiveAdtExample] = deriveEncoder[RecursiveAdtExample]
     implicit val circeEncoder8: TaggedEncoder[Circe, RecursiveAdtExample] = mkTag[Circe](encodeRecursiveAdtExample)
     private implicit val encodeRecursiveWithOptionExample: Encoder[RecursiveWithOptionExample] = deriveEncoder[RecursiveWithOptionExample]
@@ -74,9 +84,14 @@ class ConfiguredSemiautoDerivedEquivalenceSuite extends CirceSuite {
     implicit val circeDecoder1: TaggedDecoder[Circe, AnyValInside] = mkTag[Circe](deriveDecoder[AnyValInside])
     implicit val circeDecoder3: TaggedDecoder[Circe, Qux[Int]] = mkTag[Circe](deriveDecoder[Qux[Int]])
     implicit val circeDecoder5: TaggedDecoder[Circe, Baz] = mkTag[Circe](deriveDecoder[Baz])
-    private implicit val decodeFoo: Decoder[Foo] = deriveDecoder[Foo]
+    private implicit val decodeFoo: Decoder[Foo] = {
+      implicit val decodeBar = Bar.decodeBar
+      implicit val decodeBam = Bam.decodeBam
+      deriveDecoder[Foo]
+    }
     implicit val circeDecoder6: TaggedDecoder[Circe, Foo] = mkTag[Circe](decodeFoo)
     implicit val circeDecoder4: TaggedDecoder[Circe, Seq[Foo]] = mkTag[Circe](Decoder.decodeSeq(circeDecoder6.inner))
+    implicit val circeDecoderSealed: TaggedDecoder[Circe, Sealed] = mkTag[Circe](deriveDecoder[Sealed])
     private implicit val decodeRecursiveAdtExample: Decoder[RecursiveAdtExample] = deriveDecoder[RecursiveAdtExample]
     implicit val circeDecoder8: TaggedDecoder[Circe, RecursiveAdtExample] = mkTag[Circe](decodeRecursiveAdtExample)
     private implicit val decodeRecursiveWithOptionExample: Decoder[RecursiveWithOptionExample] = deriveDecoder[RecursiveWithOptionExample]
@@ -99,10 +114,12 @@ class ConfiguredSemiautoDerivedEquivalenceSuite extends CirceSuite {
     checkLaws(s"Codec[Foo] $postfix", CodecEquivalenceTests.useTagged[Foo].codecEquivalence)
     checkLaws(s"Codec[RecursiveAdtExample] $postfix", CodecEquivalenceTests.useTagged[RecursiveAdtExample].codecEquivalence)
     checkLaws(s"Codec[RecursiveWithOptionExample] $postfix", CodecEquivalenceTests.useTagged[RecursiveWithOptionExample].codecEquivalence)
+    checkLaws(s"Codec[Sealed] $postfix", CodecEquivalenceTests.useTagged[Sealed].encoderEquivalence)
     // TODO: disabled due to https://github.com/circe/circe-magnolia/issues/3
     // checkLaws(s"Codec[WithTaggedMembers] $postfix", CodecEquivalenceTests.useTagged[WithTaggedMembers].codecEquivalence)
     checkLaws(s"Codec[ClassWithDefaults] $postfix", CodecEquivalenceTests.useTagged[ClassWithDefaults].codecEquivalence)
     checkLaws(s"Codec[ClassWithJsonKey] $postfix", CodecEquivalenceTests.useTagged[ClassWithJsonKey].codecEquivalence)
+
   }
 
   testWithConfiguration("with default configuration", Configuration.default)
@@ -110,4 +127,16 @@ class ConfiguredSemiautoDerivedEquivalenceSuite extends CirceSuite {
   testWithConfiguration("with useDefault = true", Configuration.default.copy(useDefaults = true))
   testWithConfiguration("with discriminator", Configuration.default.copy(discriminator = Some("type")))
 
+  "If a sealed trait subtype has explicit Encoder instance that doesn't encode to a JsonObject, the derived encoder" should
+    s"wrap it with type constructor even when discriminator is specified by the configuration" in {
+      implicit val config: Configuration = Configuration.default.withDiscriminator("type")
+      val magnoliaEncoder = deriveConfiguredMagnoliaEncoder[Sealed]
+      val expected = parse(
+        """
+          {
+            "SubtypeWithExplicitInstance": ["1"]
+          }
+        """).right.get
+      assert(magnoliaEncoder.apply(SubtypeWithExplicitInstance(List("1"))) == expected)
+    }
 }

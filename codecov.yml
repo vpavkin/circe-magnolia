@@ -1,0 +1,2 @@
+ignore:
+  - "src/main/scala/io/circe/magnolia/configured/Configuration.scala"
