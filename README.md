@@ -57,6 +57,27 @@ val decoder = deriveMagnoliaDecoder[Foo]
 
 ```
 
+#### Configurable Semiauto and Auto derivations
+
+Configuration is possible if you want to configure your Encoder/Decoder's output. This project provides the same configuration as `circe-generic-extras`.
+
+For example, to generate Encoder/Decoder where the JSON keys are snake-cased:
+```
+import io.circe.magnolia.configured.decoder.semiauto._
+import io.circe.magnolia.configured.encoder.semiauto._
+import io.circe.magnolia.configured.Configuration
+
+case class User(firstName: Int, lastName: String)
+
+implicit val configuration: Configuration = Configuration.default.withSnakeCaseMemberNames
+
+val encoder = deriveConfiguredMagnoliaEncoder[User]
+val decoder = deriveConfiguredMagnoliaDecoder[User]
+```
+
+To avoid constantly needing to provide/import an implicit `Configuration` to derive Encoder/Decoders, you can hardcode the configuration by defining your own version of deriver. 
+See `HardcodedDerivationSpec` for an example of how to do this. (In fact, the default auto and semiauto derivers are hardcoded to use the default Configuration)
+
 ### Testing
 
 To ensure `circe-magnolia` derivation and codecs work in the same way as in `circe-generic`, several test suites from original circe repository were adapted and added to this project. These tests validate the derivation semantics and also the lawfulness of derived codecs ([example](https://github.com/circe/circe-magnolia/blob/master/tests/src/test/scala/io/circe/magnolia/AutoDerivedSuite.scala)).
