@@ -3,7 +3,7 @@ import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 
 lazy val buildSettings = Seq(
   organization := "io.circe",
-  scalaVersion := "2.12.6"
+  scalaVersion := "2.12.8"
 )
 
 def compilerOptions(compilerVersion: String) = Seq(
