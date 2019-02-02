@@ -76,7 +76,7 @@ val decoder = deriveConfiguredMagnoliaDecoder[User]
 ```
 
 To avoid constantly needing to provide/import an implicit `Configuration` to derive Encoder/Decoders, you can hardcode the configuration by defining your own version of deriver. 
-See `HardcodedDerivationSpec` for an example of how to do this. (In fact, the default auto and semiauto derivers are hardcoded to use the default Configuration)
+See [HardcodedDerivationSpec](https://github.com/circe/circe-magnolia/blob/master/tests/src/test/scala/io/circe/magnolia/configured/HardcodedDerivationSpec.scala) for an example of how to do this. (In fact, the default auto and semiauto derivers are hardcoded to use the default Configuration)
 
 ### Testing
 

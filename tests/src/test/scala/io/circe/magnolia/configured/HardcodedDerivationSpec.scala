@@ -7,8 +7,8 @@ import io.circe.parser.parse
 import io.circe.tests.CirceSuite
 import magnolia.{CaseClass, Magnolia, SealedTrait}
 
-// An example of hardcoding a configuration. This means at when deriving Encoder/Decoder you no longer need to have
-// a Configuratio in scope
+// An example of hardcoding a configuration. This means at when deriving Encoder/Decoder you no longer need to provide
+// a Configuration object
 class HardcodedDerivationSpec extends CirceSuite {
   "Hardcoded Encoder deriver" should "match the hardcoded configured behavior" in {
     assert(UserType.encoder(User("John", "Doe")) == parse(
