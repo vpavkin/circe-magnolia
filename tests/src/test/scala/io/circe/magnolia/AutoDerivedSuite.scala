@@ -6,15 +6,19 @@ import io.circe.testing.CodecTests
 import io.circe.tests.CirceSuite
 import io.circe.tests.examples._
 import io.circe.{Decoder, Encoder, Json}
+import shapeless.tag
+import shapeless.tag.@@
 import shapeless.test.illTyped
 
 class AutoDerivedSuite extends CirceSuite {
   import AutoDerivedSuiteInputs._
 
   // TODO: All these imports are temporary workaround for https://github.com/propensive/magnolia/issues/89
-  import Baz._
   import Encoder._
   import Decoder._
+
+  private implicit val encodeStringTag: Encoder[String @@ Tag] = Encoder[String].narrow
+  private implicit val decodeStringTag: Decoder[String @@ Tag] = Decoder[String].map(tag[Tag](_))
 
   checkLaws("Codec[Tuple1[Int]]", CodecTests[Tuple1[Int]].unserializableCodec)
   checkLaws("Codec[(Int, Int, Foo)]", CodecTests[(Int, Int, Foo)].unserializableCodec)
@@ -45,19 +49,19 @@ class AutoDerivedSuite extends CirceSuite {
   }
 
   "Generic decoders" should "not interfere with defined decoders" in forAll { (xs: List[String]) =>
-    val json = Json.obj("Baz" -> Json.fromValues(xs.map(Json.fromString)))
-
-    assert(Decoder[Foo].apply(json.hcursor) === Right(Baz(xs): Foo))
+    val json = Json.obj("SubtypeWithExplicitInstance" -> Json.fromValues(xs.map(Json.fromString)))
+    val ch = Decoder[Sealed].apply(json.hcursor)
+    val res = ch === Right(SubtypeWithExplicitInstance(xs): Sealed)
+    assert(res)
   }
 
   "Generic encoders" should "not interfere with defined encoders" in forAll { (xs: List[String]) =>
-    val json = Json.obj("Baz" -> Json.fromValues(xs.map(Json.fromString)))
+    val json = Json.obj("SubtypeWithExplicitInstance" -> Json.fromValues(xs.map(Json.fromString)))
 
-    assert(Encoder[Foo].apply(Baz(xs): Foo) === json)
+    assert(Encoder[Sealed].apply(SubtypeWithExplicitInstance(xs): Sealed) === json)
   }
 
   // TODO: tagged types don't work ATM, might be related to https://github.com/propensive/magnolia/issues/89
   //  checkLaws("Codec[WithTaggedMembers]", CodecTests[WithTaggedMembers].unserializableCodec)
-
   checkLaws("Codec[Seq[WithSeqOfTagged]]", CodecTests[Seq[WithSeqOfTagged]].unserializableCodec)
 }

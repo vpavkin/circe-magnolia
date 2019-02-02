@@ -63,7 +63,7 @@ lazy val scalatestVersion = "3.0.5"
 lazy val scalacheckVersion = "1.14.0"
 
 lazy val compilerSettings = Seq(
-  scalacOptions ++= compilerOptions(scalaVersion.value),
+  scalacOptions ++= compilerOptions(scalaVersion.value) ++ Seq("-Ywarn-macros:after"),
   scalacOptions in(Compile, console) --= Seq("-Ywarn-unused:imports", "-Xfatal-warnings")
 )
 
@@ -77,7 +77,9 @@ lazy val coreDependencies = libraryDependencies ++= Seq(
 
 lazy val testDependencies = libraryDependencies ++= Seq(
   "com.chuusai" %% "shapeless" % shapelessVersion,
+  "io.circe" %%% "circe-parser" % circeVersion,
   "io.circe" %%% "circe-generic" % circeVersion,
+  "io.circe" %%% "circe-generic-extras" % circeVersion,
   "io.circe" %%% "circe-testing" % circeVersion,
   "org.scalacheck" %%% "scalacheck" % scalacheckVersion,
   "org.scalatest" %%% "scalatest" % scalatestVersion

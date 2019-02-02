@@ -23,9 +23,6 @@ object SemiautoDerivedSuiteInputs {
 
     implicit val arbitraryRecursiveAdtExample: Arbitrary[RecursiveAdtExample] =
       Arbitrary(atDepth(0))
-
-    implicit val decodeRecursiveAdtExample: Decoder[RecursiveAdtExample] = deriveDecoder
-    implicit val encodeRecursiveAdtExample: Encoder[RecursiveAdtExample] = deriveEncoder
   }
 
   case class RecursiveWithOptionExample(o: Option[RecursiveWithOptionExample])
@@ -41,12 +38,6 @@ object SemiautoDerivedSuiteInputs {
 
     implicit val arbitraryRecursiveWithOptionExample: Arbitrary[RecursiveWithOptionExample] =
       Arbitrary(atDepth(0))
-
-    implicit val decodeRecursiveWithOptionExample: Decoder[RecursiveWithOptionExample] =
-      deriveDecoder
-
-    implicit val encodeRecursiveWithOptionExample: Encoder[RecursiveWithOptionExample] =
-      deriveEncoder
   }
 
   case class AnyInt(value: Int) extends AnyVal

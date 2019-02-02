@@ -6,6 +6,8 @@ import cats.syntax.functor._
 import io.circe.{Decoder, DecodingFailure, Encoder, Json}
 import io.circe.testing.ArbitraryInstances
 import org.scalacheck.{Arbitrary, Gen}
+import io.circe.magnolia.JsonKey
+import io.circe.generic.extras.{JsonKey => GeJsonKey}
 
 package object examples extends AllInstances with ArbitraryInstances {
   val glossary: Json = Json.obj(
@@ -35,6 +37,9 @@ package object examples extends AllInstances with ArbitraryInstances {
 }
 
 package examples {
+
+  import io.circe.HCursor
+
   case class Box[A](a: A)
 
   object Box {
@@ -69,7 +74,6 @@ package examples {
 
   sealed trait Foo
   case class Bar(i: Int, s: String) extends Foo
-  case class Baz(xs: List[String]) extends Foo
   case class Bam(w: Wub, d: Double) extends Foo
 
   object Bar {
@@ -86,6 +90,8 @@ package examples {
       case Bar(i, s) => (i, s)
     }
   }
+
+  case class Baz(xs: List[String])
 
   object Baz {
     implicit val eqBaz: Eq[Baz] = Eq.fromUniversalEquals
@@ -120,24 +126,91 @@ package examples {
     implicit val arbitraryFoo: Arbitrary[Foo] = Arbitrary(
       Gen.oneOf(
         Arbitrary.arbitrary[Bar],
-        Arbitrary.arbitrary[Baz],
         Arbitrary.arbitrary[Bam]
       )
     )
 
     val encodeFoo: Encoder[Foo] = Encoder.instance {
       case bar@Bar(_, _) => Json.obj("Bar" -> Bar.encodeBar(bar))
-      case baz@Baz(_) => Json.obj("Baz" -> Baz.encodeBaz(baz))
       case bam@Bam(_, _) => Json.obj("Bam" -> Bam.encodeBam(bam))
     }
 
     val decodeFoo: Decoder[Foo] = Decoder.instance { c =>
       c.keys.map(_.toVector) match {
         case Some(Vector("Bar")) => c.get("Bar")(Bar.decodeBar.widen)
-        case Some(Vector("Baz")) => c.get("Baz")(Baz.decodeBaz.widen)
         case Some(Vector("Bam")) => c.get("Bam")(Bam.decodeBam.widen)
         case _ => Left(DecodingFailure("Foo", c.history))
       }
     }
   }
+
+  sealed trait Sealed
+  final case class SubtypeWithExplicitInstance(xs: List[String]) extends Sealed
+  final case class AnotherSubtype(i: Int) extends Sealed
+
+  object Sealed {
+    implicit val arbitrary: Arbitrary[Sealed] = Arbitrary(Gen.oneOf(
+      Arbitrary.arbitrary[SubtypeWithExplicitInstance],
+      Arbitrary.arbitrary[AnotherSubtype]
+    ))
+    implicit val eq: Eq[Sealed] = Eq.fromUniversalEquals
+  }
+
+  object SubtypeWithExplicitInstance {
+    implicit val arbitrary: Arbitrary[SubtypeWithExplicitInstance] = Arbitrary(for {
+      strs <- Arbitrary.arbitrary[List[String]]
+    } yield  SubtypeWithExplicitInstance(strs))
+
+    implicit val encode: Encoder[SubtypeWithExplicitInstance] = (a: SubtypeWithExplicitInstance) => Json.fromValues(a.xs.map(Json.fromString))
+    implicit val decode: Decoder[SubtypeWithExplicitInstance] = (a: HCursor) => a.as[List[String]].map(SubtypeWithExplicitInstance(_))
+  }
+
+  object AnotherSubtype {
+    implicit val arbitrary: Arbitrary[AnotherSubtype] = Arbitrary(for {
+     i <- Arbitrary.arbitrary[Int]
+    } yield AnotherSubtype(i))
+  }
+
+  sealed trait Organization
+  final case class Public(name: String, taxCategory: String) extends Organization
+  final case class NonProfit(orgName: String) extends Organization
+
+  final case class ClassWithDefaults(
+    required: String,
+    field: String = "defaultValue",
+    defaultOptSome: Option[String] = Some("defaultOptSome"),
+    defaultNone: Option[String] = None
+  )
+
+  object ClassWithDefaults {
+    implicit val eq: Eq[ClassWithDefaults] = Eq.fromUniversalEquals
+    implicit val arbitrary: Arbitrary[ClassWithDefaults] = Arbitrary(for {
+      required <- Arbitrary.arbitrary[String]
+      field <- Arbitrary.arbitrary[String]
+      defaultOptSome <- Arbitrary.arbitrary[Option[String]]
+      defaultNone <- Arbitrary.arbitrary[Option[String]]
+    } yield ClassWithDefaults(
+      required = required,
+      field = field,
+      defaultOptSome = defaultOptSome,
+      defaultNone = defaultNone
+    ))
+  }
+
+  final case class ClassWithJsonKey(
+    @GeJsonKey("Renamed") @JsonKey("Renamed") origName: String,
+    anotherField: String
+  )
+
+  object ClassWithJsonKey {
+    implicit val eq: Eq[ClassWithJsonKey] = Eq.fromUniversalEquals
+    implicit val arbitrary: Arbitrary[ClassWithJsonKey] = Arbitrary(for {
+      origName <- Arbitrary.arbitrary[String]
+      anotherField <- Arbitrary.arbitrary[String]
+    } yield ClassWithJsonKey(
+      origName,
+      anotherField
+    ))
+  }
+
 }
