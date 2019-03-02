@@ -145,7 +145,7 @@ class ConfiguredSemiautoDerivedSuite extends CirceSuite with Inside {
   "Configuration#useDefaults" should "Use the parameter default value if key does not exist in JSON" in {
     assert(
       WithDefaultValue
-        .decoder(parse("""{"required": "req"}""").right.get.hcursor) == Right(ClassWithDefaults(required = "req"))
+        .decoder(parse("""{"required": "req"}""").right.get.hcursor) == Right(ClassWithDefaults(required = "req", defaultOptNotSpecified = None))
     )
   }
 
@@ -156,15 +156,17 @@ class ConfiguredSemiautoDerivedSuite extends CirceSuite with Inside {
         "required": "req",
         "field": "provided",
         "defaultOptSome": "provided1",
-        "defaultNone": "provided2"
+        "defaultNone": "provided2",
+        "defaultOptNotSpecified": "provided3"
       }
     """).right.get
     val expected =
       ClassWithDefaults(
-        required       = "req",
-        field          = "provided",
-        defaultOptSome = Some("provided1"),
-        defaultNone    = Some("provided2")
+        required               = "req",
+        field                  = "provided",
+        defaultOptSome         = Some("provided1"),
+        defaultNone            = Some("provided2"),
+        defaultOptNotSpecified = Some("provided3"),
       )
     assert(WithDefaultValue.decoder(input.hcursor) == Right(expected))
   }
@@ -176,7 +178,7 @@ class ConfiguredSemiautoDerivedSuite extends CirceSuite with Inside {
         "defaultOptSome": null
       }
     """).right.get
-    val expected = ClassWithDefaults(required = "req", defaultOptSome = None)
+    val expected = ClassWithDefaults(required = "req", defaultOptSome = None, defaultOptNotSpecified = None)
     assert(WithDefaultValue.decoder(input.hcursor) == Right(expected))
   }
 
