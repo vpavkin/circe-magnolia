@@ -34,11 +34,11 @@ private[magnolia] object MagnoliaDecoder {
             val keyCursor = c.downField(key)
             keyCursor.focus match {
               case Some(json) => json.as[p.PType](p.typeclass)
-              case None => p.default.map { default => Right(default) }.getOrElse {
+              case None => p.default.fold(
                 // Some decoders (in particular, the default Option[T] decoder) do special things when a key is missing,
                 // so we give them a chance to do their thing here.
                 p.typeclass.tryDecode(keyCursor)
-              }
+              )(Right(_))
             }
           }
         }
