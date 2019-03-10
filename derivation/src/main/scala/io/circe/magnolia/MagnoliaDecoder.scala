@@ -34,7 +34,11 @@ private[magnolia] object MagnoliaDecoder {
             val keyCursor = c.downField(key)
             keyCursor.focus match {
               case Some(json) => json.as[p.PType](p.typeclass)
-              case None => p.default.toRight(DecodingFailure("Attempt to decode value on failed cursor", keyCursor.history))
+              case None => p.default.fold {
+                // Some decoders (in particular, the default Option[T] decoder) do special things when a key is missing,
+                // so we give them a chance to do their thing here.
+                p.typeclass.tryDecode(keyCursor)
+              }(Right(_))
             }
           }
         }
@@ -43,11 +47,9 @@ private[magnolia] object MagnoliaDecoder {
     else {
       new Decoder[T] {
         def apply(c: HCursor): Result[T] = {
-          caseClass.constructMonadic(
-            p =>
-              c.downField(paramJsonKeyLookup.getOrElse(p.label, throw new IllegalStateException("Looking up a parameter label should always yield a value. This is a bug")))
-                .as[p.PType](p.typeclass)
-          )
+          caseClass.constructMonadic { p => 
+            p.typeclass.tryDecode(c.downField(paramJsonKeyLookup.getOrElse(p.label, throw new IllegalStateException("Looking up a parameter label should always yield a value. This is a bug"))))
+          }
         }
       }
     }

@@ -179,7 +179,8 @@ package examples {
     required: String,
     field: String = "defaultValue",
     defaultOptSome: Option[String] = Some("defaultOptSome"),
-    defaultNone: Option[String] = None
+    defaultNone: Option[String] = None,
+    defaultOptNotSpecified: Option[String],
   )
 
   object ClassWithDefaults {
@@ -189,11 +190,13 @@ package examples {
       field <- Arbitrary.arbitrary[String]
       defaultOptSome <- Arbitrary.arbitrary[Option[String]]
       defaultNone <- Arbitrary.arbitrary[Option[String]]
+      defaultOptNotSpecified <- Arbitrary.arbitrary[Option[String]]
     } yield ClassWithDefaults(
       required = required,
       field = field,
       defaultOptSome = defaultOptSome,
-      defaultNone = defaultNone
+      defaultNone = defaultNone,
+      defaultOptNotSpecified = defaultOptNotSpecified,
     ))
   }
 
