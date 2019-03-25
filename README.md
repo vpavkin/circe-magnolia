@@ -3,7 +3,7 @@
 
 [![Build Status](https://img.shields.io/travis/circe/circe-magnolia/master.svg)](https://travis-ci.org/circe/circe-magnolia)
 [![Coverage status](https://img.shields.io/codecov/c/github/circe/circe-magnolia/master.svg)](https://codecov.io/github/circe/circe-magnolia?branch=master)
-[![Maven Central](https://img.shields.io/maven-central/v/io.circe/circe-magnolia-derivation_2.12.svg)](https://github.com/circe/circe-magnolia)
+[![Maven Central](https://img.shields.io/maven-central/v/io.circe/circe-magnolia-derivation_2.12.svg)](https://search.maven.org/artifact/io.circe/circe-magnolia-derivation_2.12)
 
 This library provides facilities to derive JSON codec instances for Circe using Magnolia macros.
 
@@ -20,7 +20,7 @@ See [Testing](#testing) and [Status](#status) for more details.
 To play around with circe-magnolia, add it to your build:
 
 ```scala
-libraryDependencies += "io.circe" %%% "circe-magnolia-derivation" % "0.3.0"
+libraryDependencies += "io.circe" %%% "circe-magnolia-derivation" % "0.4.0"
 ```
 
 After that, as in `circe-generic`, you can use one of two derivation modes.
