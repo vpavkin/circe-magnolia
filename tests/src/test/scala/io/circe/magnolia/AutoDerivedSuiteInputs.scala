@@ -81,6 +81,17 @@ object AutoDerivedSuiteInputs extends AllSyntax {
     implicit val arbitraryRecursiveWithListExample: Arbitrary[RecursiveWithListExample] = Arbitrary(atDepth(0))
   }
 
+  @JsonVal case class AnyValWithJsonVal(value: Int) extends AnyVal
+
+  case class AnyValWithJsonValInside(id: AnyValWithJsonVal)
+
+  object AnyValWithJsonValInside {
+    implicit val eqJsonValCaseClass: Eq[AnyValWithJsonValInside] = Eq.fromUniversalEquals
+
+    implicit val arbitraryAnyIntVal: Arbitrary[AnyValWithJsonValInside] =
+      Arbitrary(arbitrary[Int].map(i => AnyValWithJsonValInside(AnyValWithJsonVal(i))))
+  }
+
   case class AnyInt(value: Int) extends AnyVal
 
   case class AnyValInside(v: AnyInt)

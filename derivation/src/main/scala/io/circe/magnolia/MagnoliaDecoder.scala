@@ -12,6 +12,9 @@ private[magnolia] object MagnoliaDecoder {
   private[magnolia] def combine[T](
     caseClass: CaseClass[Decoder, T]
   )(implicit configuration: Configuration): Decoder[T] = {
+    val paramJsonValLookup = caseClass.annotations.collectFirst {
+      case ann: JsonVal if caseClass.isValueClass => ann
+    }
     val paramJsonKeyLookup: Map[String, String] = caseClass.parameters.map{ p =>
       val jsonKeyAnnotation = p.annotations.collectFirst {
         case ann: JsonKey => ann

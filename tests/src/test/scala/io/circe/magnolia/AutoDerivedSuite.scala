@@ -31,6 +31,7 @@ class AutoDerivedSuite extends CirceSuite {
   checkLaws("Codec[RecursiveWithOptionExample]", CodecTests[RecursiveWithOptionExample].unserializableCodec)
   checkLaws("Codec[RecursiveWithListExample]", CodecTests[RecursiveWithListExample].unserializableCodec)
   checkLaws("Codec[AnyValInside]", CodecTests[AnyValInside].unserializableCodec)
+  checkLaws("Codec[AnyValWithJsonVal]", CodecTests[AnyValWithJsonValInside].unserializableCodec)
 
   "A generically derived codec" should "not interfere with base instances" in forAll { (is: List[Int]) =>
     val json = Encoder[List[Int]].apply(is)
@@ -60,6 +61,15 @@ class AutoDerivedSuite extends CirceSuite {
 
     assert(Encoder[Sealed].apply(SubtypeWithExplicitInstance(xs): Sealed) === json)
   }
+
+  "JsonVal" should "encode as a single unwrapped value" in forAll { (jsonVal: AnyValWithJsonValInside) =>
+    val json = Json.obj("id" -> Json.fromInt(jsonVal.id.value))
+
+    val encoded = Encoder[AnyValWithJsonValInside].apply(jsonVal)
+
+    assert(encoded === json)
+  }
+
 
   // TODO: tagged types don't work ATM, might be related to https://github.com/propensive/magnolia/issues/89
   //  checkLaws("Codec[WithTaggedMembers]", CodecTests[WithTaggedMembers].unserializableCodec)
