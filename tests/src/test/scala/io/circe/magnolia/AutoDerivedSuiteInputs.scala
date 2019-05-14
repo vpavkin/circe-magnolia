@@ -92,6 +92,13 @@ object AutoDerivedSuiteInputs extends AllSyntax {
       Arbitrary(arbitrary[Int].map(i => AnyValWithJsonValInside(AnyValWithJsonVal(i))))
   }
 
+  @JsonVal case class ProductWithJsonVal(f1: Int, f2: Int) extends Product with Serializable
+
+  object ProductWithJsonVal {
+    implicit val arbitraryProductWithJsonVal: Arbitrary[ProductWithJsonVal] =
+      Arbitrary(arbitrary[Int].map(i => ProductWithJsonVal(i, i)))
+  }
+
   case class AnyInt(value: Int) extends AnyVal
 
   case class AnyValInside(v: AnyInt)

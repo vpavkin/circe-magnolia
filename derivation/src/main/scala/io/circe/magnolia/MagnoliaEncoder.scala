@@ -8,7 +8,7 @@ private[magnolia] object MagnoliaEncoder {
 
   private[magnolia] def combine[T](caseClass: CaseClass[Encoder, T])(implicit config: Configuration): Encoder[T] = {
     val paramJsonValLookup = caseClass.annotations.collectFirst {
-      case ann: JsonVal if caseClass.isValueClass => ann
+      case ann: JsonVal => ann
     }
     val paramJsonKeyLookup = caseClass.parameters.map { p =>
       val jsonKeyAnnotation = p.annotations.collectFirst {
@@ -43,7 +43,8 @@ private[magnolia] object MagnoliaEncoder {
         def apply(a: T): Json =
           Json.obj(caseClass.parameters.map { p =>
             val label = paramJsonKeyLookup.getOrElse(p.label,
-              throw new IllegalStateException("Looking up a parameter label should always yield a value. This is a bug"))
+              throw new IllegalStateException(
+                "Looking up a parameter label should always yield a value. This is a bug"))
             label -> p.typeclass(p.dereference(a))
           }: _*)
       }

@@ -11,6 +11,7 @@ import shapeless.tag.@@
 import shapeless.test.illTyped
 
 class AutoDerivedSuite extends CirceSuite {
+
   import AutoDerivedSuiteInputs._
 
   // TODO: All these imports are temporary workaround for https://github.com/propensive/magnolia/issues/89
@@ -70,6 +71,18 @@ class AutoDerivedSuite extends CirceSuite {
     assert(encoded === json)
   }
 
+  "JsonVal" should "decode as a single unwrapped value to a value class" in forAll {
+    (jsonVal: AnyValWithJsonValInside) =>
+    val json = Json.obj("id" -> Json.fromInt(jsonVal.id.value))
+
+    val decoded = Decoder[AnyValWithJsonValInside].decodeJson(json)
+    assert(decoded === Right(jsonVal))
+  }
+
+  "JsonVal encoder" should "throw when the case class is a not a value class" in forAll {
+    (jsonVal: ProductWithJsonVal) =>
+      assertThrows[DerivationError](Encoder[ProductWithJsonVal].apply(jsonVal))
+  }
 
   // TODO: tagged types don't work ATM, might be related to https://github.com/propensive/magnolia/issues/89
   //  checkLaws("Codec[WithTaggedMembers]", CodecTests[WithTaggedMembers].unserializableCodec)
