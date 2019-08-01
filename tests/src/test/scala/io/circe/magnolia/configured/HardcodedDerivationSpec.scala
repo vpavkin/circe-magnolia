@@ -18,7 +18,7 @@ class HardcodedDerivationSpec extends CirceSuite {
           "first_name": "John",
           "last_name": "Doe"
         }
-      """).right.get)
+      """).toOption.get)
   }
 }
 

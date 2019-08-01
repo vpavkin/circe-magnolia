@@ -4,15 +4,14 @@ import cats.instances.AllInstances
 import cats.kernel.Eq
 import cats.syntax.{AllSyntax, EitherOps}
 import io.circe.testing.{ArbitraryInstances, EqInstances}
-import org.scalatest.FlatSpec
-import org.scalatest.prop.{Checkers, GeneratorDrivenPropertyChecks}
+import org.scalatest.flatspec.AnyFlatSpec
 import org.typelevel.discipline.Laws
-import scala.language.implicitConversions
+import org.scalatestplus.scalacheck.{Checkers, ScalaCheckDrivenPropertyChecks}
 
 /**
   * An opinionated stack of traits to improve consistency and reduce boilerplate in circe tests.
   */
-trait CirceSuite extends FlatSpec with GeneratorDrivenPropertyChecks
+trait CirceSuite extends AnyFlatSpec with ScalaCheckDrivenPropertyChecks
   with AllInstances with AllSyntax
   with ArbitraryInstances with EqInstances {
 

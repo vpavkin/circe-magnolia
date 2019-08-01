@@ -3,7 +3,7 @@ import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 
 lazy val buildSettings = Seq(
   organization := "io.circe",
-  scalaVersion := "2.12.8"
+  scalaVersion := "2.13.0"
 )
 
 def compilerOptions(compilerVersion: String) = Seq(
@@ -18,9 +18,7 @@ def compilerOptions(compilerVersion: String) = Seq(
   "-unchecked",
   "-Xcheckinit",
   "-Xfatal-warnings",
-  "-Xfuture",
   "-Xlint:adapted-args",
-  "-Xlint:by-name-right-associative",
   "-Xlint:delayedinit-select",
   "-Xlint:doc-detached",
   "-Xlint:inaccessible",
@@ -34,14 +32,7 @@ def compilerOptions(compilerVersion: String) = Seq(
   "-Xlint:private-shadow",
   "-Xlint:stars-align",
   "-Xlint:type-parameter-shadow",
-  "-Xlint:unsound-match",
-  "-Yno-adapted-args",
-  "-Ypartial-unification",
   "-Ywarn-dead-code",
-  "-Ywarn-inaccessible",
-  "-Ywarn-infer-any",
-  "-Ywarn-nullary-override",
-  "-Ywarn-nullary-unit",
   "-Ywarn-numeric-widen",
   "-Ywarn-value-discard") ++ (
   if (CrossVersion.partialVersion(compilerVersion).exists(_._2 >= 12)) Seq(
@@ -53,13 +44,25 @@ def compilerOptions(compilerVersion: String) = Seq(
     "-Ywarn-unused:params",
     "-Ywarn-unused:patvars",
     "-Ywarn-unused:privates")
+  else Seq.empty) ++ (
+  if (CrossVersion.partialVersion(compilerVersion).exists(_._2 <= 12)) Seq(
+    "-Xfuture",
+    "-Xlint:by-name-right-associative",
+    "-Xlint:unsound-match",
+    "-Yno-adapted-args",
+    "-Ypartial-unification",
+    "-Ywarn-inaccessible",
+    "-Ywarn-infer-any",
+    "-Ywarn-nullary-override",
+    "-Ywarn-nullary-unit")
   else Seq.empty)
 
-lazy val magnoliaVersion = "0.10.0"
-lazy val mercatorVersion = "0.1.1"
-lazy val circeVersion = "0.11.1"
+lazy val magnoliaVersion = "0.11.0"
+lazy val mercatorVersion = "0.2.1"
+lazy val circeVersion = "0.12.0-M4"
 lazy val shapelessVersion = "2.3.3"
-lazy val scalatestVersion = "3.0.5"
+lazy val scalatestVersion = "3.0.8"
+lazy val scalatestplusVersion = "1.0.0-SNAP8"
 lazy val scalacheckVersion = "1.14.0"
 
 lazy val compilerSettings = Seq(
@@ -82,6 +85,7 @@ lazy val testDependencies = libraryDependencies ++= Seq(
   "io.circe" %%% "circe-generic-extras" % circeVersion,
   "io.circe" %%% "circe-testing" % circeVersion,
   "org.scalacheck" %%% "scalacheck" % scalacheckVersion,
+  "org.scalatestplus" %%% "scalatestplus-scalacheck" % scalatestplusVersion,
   "org.scalatest" %%% "scalatest" % scalatestVersion
 )
 
@@ -89,10 +93,10 @@ lazy val circeMagnolia = project.in(file("."))
   .settings(name := "circe-magnolia")
   .settings(allSettings: _*)
   .settings(noPublishSettings: _*)
-  .aggregate(derivationJVM, derivationJS, testsJS, testsJVM)
-  .dependsOn(derivationJVM, derivationJS, testsJS, testsJVM)
+  .aggregate(derivationJVM, testsJVM)
+  .dependsOn(derivationJVM, testsJVM)
 
-lazy val derivation = crossProject(JSPlatform, JVMPlatform).crossType(CrossType.Pure)
+lazy val derivation = crossProject(JVMPlatform).crossType(CrossType.Pure)
   .in(file("derivation"))
   .settings(
     description := "Magnolia-based derivation for Circe codecs",
@@ -103,9 +107,8 @@ lazy val derivation = crossProject(JSPlatform, JVMPlatform).crossType(CrossType.
   .settings(coreDependencies)
 
 lazy val derivationJVM = derivation.jvm
-lazy val derivationJS = derivation.js
 
-lazy val tests = crossProject(JSPlatform, JVMPlatform).crossType(CrossType.Pure)
+lazy val tests = crossProject(JVMPlatform).crossType(CrossType.Pure)
   .in(file("tests"))
   .settings(
     description := "Circe-magnolia tests",
@@ -119,11 +122,9 @@ lazy val tests = crossProject(JSPlatform, JVMPlatform).crossType(CrossType.Pure)
   .settings(
     coverageExcludedPackages :=".*"
   )
-  .jsConfigure(_.enablePlugins(ScalaJSBundlerPlugin))
   .dependsOn(derivation)
 
 lazy val testsJVM = tests.jvm
-lazy val testsJS = tests.js
 
 lazy val noPublishSettings = Seq(
   publish := {},
@@ -182,4 +183,4 @@ lazy val sharedReleaseProcess = Seq(
   )
 )
 
-addCommandAlias("validate", ";compile;testsJVM/test;testsJS/test")
+addCommandAlias("validate", ";compile;testsJVM/test")

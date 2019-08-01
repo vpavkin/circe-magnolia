@@ -26,7 +26,7 @@ class ConfiguredSemiautoDerivedSuite extends CirceSuite with Inside {
           "name": "X",
           "tax_category": "high"
         }
-      """).right.get
+      """).toOption.get
     assert(SnakeCaseAndDiscriminator.encoder(obj) == json)
     assert(SnakeCaseAndDiscriminator.decoder(json.hcursor) == Right(obj))
   }
@@ -40,7 +40,7 @@ class ConfiguredSemiautoDerivedSuite extends CirceSuite with Inside {
             "org-name": "X"
           }
         }
-      """).right.get
+      """).toOption.get
     assert(KebabCase.encoder(obj) == json)
     assert(KebabCase.decoder(json.hcursor) == Right(obj))
   }
@@ -52,7 +52,7 @@ class ConfiguredSemiautoDerivedSuite extends CirceSuite with Inside {
           "name": "X",
           "tax_category": "high"
         }
-      """).right.get
+      """).toOption.get
     inside(SnakeCaseAndDiscriminator.decoder(input.hcursor)) {
       case Left(e) => {
         assert(e.message.contains("couldn't find discriminator or is not of type String."))
@@ -70,7 +70,7 @@ class ConfiguredSemiautoDerivedSuite extends CirceSuite with Inside {
         "name": "X",
         "tax_category": "high"
       }
-    """).right.get
+    """).toOption.get
 
     inside(SnakeCaseAndDiscriminator.decoder(input.hcursor)) {
       case Left(e) => {
@@ -99,7 +99,7 @@ class ConfiguredSemiautoDerivedSuite extends CirceSuite with Inside {
         "name": "X",
         "tax_category": "high"
       }
-    """).right.get
+    """).toOption.get
 
     inside(SnakeCaseAndDiscriminator.decoder(input.hcursor)) {
       case Left(e) => {
@@ -118,7 +118,7 @@ class ConfiguredSemiautoDerivedSuite extends CirceSuite with Inside {
             "orgName": "RSPCA"
           }
         }
-      """).right.get
+      """).toOption.get
 
     assert(DefaultConfig.encoder(obj) == expectedJson)
     assert(DefaultConfig.decoder(expectedJson.hcursor) == Right(obj))
@@ -135,7 +135,7 @@ class ConfiguredSemiautoDerivedSuite extends CirceSuite with Inside {
            "Renamed": "value",
            "another_field": "another"
          }
-      """).right.get
+      """).toOption.get
 
     val expected = ClassWithJsonKey("value", "another")
     assert(decoder.apply(jsonResult.hcursor) == Right(expected))
@@ -145,7 +145,7 @@ class ConfiguredSemiautoDerivedSuite extends CirceSuite with Inside {
   "Configuration#useDefaults" should "Use the parameter default value if key does not exist in JSON" in {
     assert(
       WithDefaultValue
-        .decoder(parse("""{"required": "req"}""").right.get.hcursor) == Right(ClassWithDefaults(required = "req", defaultOptNotSpecified = None))
+        .decoder(parse("""{"required": "req"}""").toOption.get.hcursor) == Right(ClassWithDefaults(required = "req", defaultOptNotSpecified = None))
     )
   }
 
@@ -159,7 +159,7 @@ class ConfiguredSemiautoDerivedSuite extends CirceSuite with Inside {
         "defaultNone": "provided2",
         "defaultOptNotSpecified": "provided3"
       }
-    """).right.get
+    """).toOption.get
     val expected =
       ClassWithDefaults(
         required               = "req",
@@ -177,14 +177,14 @@ class ConfiguredSemiautoDerivedSuite extends CirceSuite with Inside {
         "required": "req",
         "defaultOptSome": null
       }
-    """).right.get
+    """).toOption.get
     val expected = ClassWithDefaults(required = "req", defaultOptSome = None, defaultOptNotSpecified = None)
     assert(WithDefaultValue.decoder(input.hcursor) == Right(expected))
   }
 
   "Configuration#useDefaults" should "fail if key is missing and no default was provided for parameter" in {
     assert(
-      WithDefaultValue.decoder(parse("{}").right.get.hcursor) == Left(
+      WithDefaultValue.decoder(parse("{}").toOption.get.hcursor) == Left(
         DecodingFailure("Attempt to decode value on failed cursor", List(CursorOp.DownField("required")))
       )
     )

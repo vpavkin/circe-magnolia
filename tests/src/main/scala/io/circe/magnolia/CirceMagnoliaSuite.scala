@@ -1,5 +1,6 @@
 package io.circe.magnolia
 
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.{Matchers}
+import org.scalatest.flatspec.AnyFlatSpec
 
-trait CirceMagnoliaSuite extends FlatSpec with Matchers
+trait CirceMagnoliaSuite extends AnyFlatSpec with Matchers

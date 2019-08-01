@@ -33,7 +33,7 @@ class IntermediateTraitsTest extends CirceMagnoliaSuite with EitherValues {
   // it's not that huge problem, until you try to decode a leaf, that is under an intermediate trait (next test)
   "Magnolia encoder" should "skip intermediate traits" in {
     val json = encoder(C1(5))
-    json.hcursor.get[JsonObject]("C1").right.value
+    json.hcursor.get[JsonObject]("C1").toOption.get
   }
 
   // when sending a message to JSON API we don't usually specify intermediate traits -
@@ -41,6 +41,6 @@ class IntermediateTraitsTest extends CirceMagnoliaSuite with EitherValues {
   // Magnolia can't see the C1, because on the first dispatch it faces only A, B and C.
   "Magnolia decoder" should "skip intermediate traits" in {
     val json = Json.obj("C1" -> Json.obj("c1" -> Json.fromInt(2)))
-    decoder(HCursor.fromJson(json)).right.value
+    decoder(HCursor.fromJson(json)).toOption.get
   }
 }
