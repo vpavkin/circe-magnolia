@@ -60,7 +60,7 @@ lazy val mercatorVersion = "0.2.1"
 lazy val circeVersion = "0.11.1"
 lazy val shapelessVersion = "2.3.3"
 lazy val scalatestVersion = "3.0.5"
-lazy val scalacheckVersion = "1.14.0"
+lazy val scalacheckVersion = "1.14.1"
 
 lazy val compilerSettings = Seq(
   scalacOptions ++= compilerOptions(scalaVersion.value) ++ Seq("-Ywarn-macros:after"),
