@@ -55,7 +55,7 @@ def compilerOptions(compilerVersion: String) = Seq(
     "-Ywarn-unused:privates")
   else Seq.empty)
 
-lazy val magnoliaVersion = "0.11.0"
+lazy val magnoliaVersion = "0.12.0"
 lazy val mercatorVersion = "0.2.1"
 lazy val circeVersion = "0.11.1"
 lazy val shapelessVersion = "2.3.3"
