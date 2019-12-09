@@ -38,7 +38,7 @@ private[magnolia] object MagnoliaDecoder {
                 // Some decoders (in particular, the default Option[T] decoder) do special things when a key is missing,
                 // so we give them a chance to do their thing here.
                 p.typeclass.tryDecode(keyCursor)
-              }(Right(_))
+              }(Right(_): Either[DecodingFailure, p.PType])
             }
           }
         }
@@ -47,7 +47,7 @@ private[magnolia] object MagnoliaDecoder {
     else {
       new Decoder[T] {
         def apply(c: HCursor): Result[T] = {
-          caseClass.constructMonadic { p => 
+          caseClass.constructMonadic { p =>
             p.typeclass.tryDecode(c.downField(paramJsonKeyLookup.getOrElse(p.label, throw new IllegalStateException("Looking up a parameter label should always yield a value. This is a bug"))))
           }
         }

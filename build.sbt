@@ -3,7 +3,7 @@ import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 
 lazy val buildSettings = Seq(
   organization := "io.circe",
-  scalaVersion := "2.12.8"
+  scalaVersion := "2.12.10"
 )
 
 def compilerOptions(compilerVersion: String) = Seq(
@@ -55,12 +55,13 @@ def compilerOptions(compilerVersion: String) = Seq(
     "-Ywarn-unused:privates")
   else Seq.empty)
 
-lazy val magnoliaVersion = "0.11.0"
+lazy val magnoliaVersion = "0.12.2"
 lazy val mercatorVersion = "0.2.1"
-lazy val circeVersion = "0.11.1"
+lazy val circeVersion = "0.12.3"
+lazy val circeGenericExtrasVersion = "0.12.2"
 lazy val shapelessVersion = "2.3.3"
 lazy val scalatestVersion = "3.0.8"
-lazy val scalacheckVersion = "1.14.0"
+lazy val scalacheckVersion = "1.14.2"
 
 lazy val compilerSettings = Seq(
   scalacOptions ++= compilerOptions(scalaVersion.value) ++ Seq("-Ywarn-macros:after"),
@@ -79,7 +80,7 @@ lazy val testDependencies = libraryDependencies ++= Seq(
   "com.chuusai" %% "shapeless" % shapelessVersion,
   "io.circe" %%% "circe-parser" % circeVersion,
   "io.circe" %%% "circe-generic" % circeVersion,
-  "io.circe" %%% "circe-generic-extras" % circeVersion,
+  "io.circe" %%% "circe-generic-extras" % circeGenericExtrasVersion,
   "io.circe" %%% "circe-testing" % circeVersion,
   "org.scalacheck" %%% "scalacheck" % scalacheckVersion,
   "org.scalatest" %%% "scalatest" % scalatestVersion
