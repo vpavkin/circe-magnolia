@@ -10,16 +10,20 @@ object SemiautoDerivedSuiteInputs {
 
   sealed trait RecursiveAdtExample
   case class BaseAdtExample(a: String) extends RecursiveAdtExample
-  case class NestedAdtExample(r: RecursiveAdtExample) extends RecursiveAdtExample
+  case class NestedAdtExample(r: RecursiveAdtExample)
+      extends RecursiveAdtExample
 
   object RecursiveAdtExample {
-    implicit val eqRecursiveAdtExample: Eq[RecursiveAdtExample] = Eq.fromUniversalEquals
+    implicit val eqRecursiveAdtExample: Eq[RecursiveAdtExample] =
+      Eq.fromUniversalEquals
 
-    private def atDepth(depth: Int): Gen[RecursiveAdtExample] = if (depth < 3)
-      Gen.oneOf(
-        Arbitrary.arbitrary[String].map(BaseAdtExample(_)),
-        atDepth(depth + 1).map(NestedAdtExample(_))
-      ) else Arbitrary.arbitrary[String].map(BaseAdtExample(_))
+    private def atDepth(depth: Int): Gen[RecursiveAdtExample] =
+      if (depth < 3)
+        Gen.oneOf(
+          Arbitrary.arbitrary[String].map(BaseAdtExample(_)),
+          atDepth(depth + 1).map(NestedAdtExample(_))
+        )
+      else Arbitrary.arbitrary[String].map(BaseAdtExample(_))
 
     implicit val arbitraryRecursiveAdtExample: Arbitrary[RecursiveAdtExample] =
       Arbitrary(atDepth(0))
@@ -31,12 +35,13 @@ object SemiautoDerivedSuiteInputs {
     implicit val eqRecursiveWithOptionExample: Eq[RecursiveWithOptionExample] =
       Eq.fromUniversalEquals
 
-    private def atDepth(depth: Int): Gen[RecursiveWithOptionExample] = if (depth < 3)
-      Arbitrary.arbitrary[Option[RecursiveWithOptionExample]].map(
-        RecursiveWithOptionExample(_)
-      ) else Gen.const(RecursiveWithOptionExample(None))
+    private def atDepth(depth: Int): Gen[RecursiveWithOptionExample] =
+      if (depth < 3)
+        Gen.option(atDepth(depth + 1)).map(RecursiveWithOptionExample(_))
+      else Gen.const(RecursiveWithOptionExample(None))
 
-    implicit val arbitraryRecursiveWithOptionExample: Arbitrary[RecursiveWithOptionExample] =
+    implicit val arbitraryRecursiveWithOptionExample
+      : Arbitrary[RecursiveWithOptionExample] =
       Arbitrary(atDepth(0))
   }
 

@@ -55,49 +55,49 @@ class ConfiguredSemiautoDerivedEquivalenceSuite extends CirceSuite {
   }
 
   private class CirceCodecs(config: GeConfiguration) {
-    import io.circe.generic.extras.semiauto.{deriveEncoder, deriveDecoder}
+    import io.circe.generic.extras.semiauto.{deriveConfiguredEncoder, deriveConfiguredDecoder}
 
     implicit val configuration: GeConfiguration = config
 
-    implicit val circeEncoder1: TaggedEncoder[Circe, AnyValInside] = mkTag[Circe](deriveEncoder[AnyValInside])
-    implicit val circeEncoder3: TaggedEncoder[Circe, Box[Int]] = mkTag[Circe](deriveEncoder[Box[Int]])
-    implicit val circeEncoder4: TaggedEncoder[Circe, Qux[Int]] = mkTag[Circe](deriveEncoder[Qux[Int]])
-    implicit val circeEncoder6: TaggedEncoder[Circe, Baz] = mkTag[Circe](deriveEncoder[Baz])
+    implicit val circeEncoder1: TaggedEncoder[Circe, AnyValInside] = mkTag[Circe](deriveConfiguredEncoder[AnyValInside])
+    implicit val circeEncoder3: TaggedEncoder[Circe, Box[Int]] = mkTag[Circe](deriveConfiguredEncoder[Box[Int]])
+    implicit val circeEncoder4: TaggedEncoder[Circe, Qux[Int]] = mkTag[Circe](deriveConfiguredEncoder[Qux[Int]])
+    implicit val circeEncoder6: TaggedEncoder[Circe, Baz] = mkTag[Circe](deriveConfiguredEncoder[Baz])
     private implicit val encodeFoo: Encoder[Foo] = {
       // Circe does not automatically derive instances for subtypes
       implicit val encodeBar = Bar.encodeBar
       implicit val encodeBam = Bam.encodeBam
-      deriveEncoder[Foo]
+      deriveConfiguredEncoder[Foo]
     }
     implicit val circeEncoder7: TaggedEncoder[Circe, Foo] = {
       mkTag[Circe](encodeFoo)
     }
     implicit val circeEncoderSeqFoo: TaggedEncoder[Circe, Seq[Foo]] = mkTag[Circe](Encoder.encodeSeq(encodeFoo))
-    implicit val circeEncoderSealed: TaggedEncoder[Circe, Sealed] = mkTag[Circe](deriveEncoder[Sealed])
-    private implicit val encodeRecursiveAdtExample: Encoder[RecursiveAdtExample] = deriveEncoder[RecursiveAdtExample]
+    implicit val circeEncoderSealed: TaggedEncoder[Circe, Sealed] = mkTag[Circe](deriveConfiguredEncoder[Sealed])
+    private implicit val encodeRecursiveAdtExample: Encoder[RecursiveAdtExample] = deriveConfiguredEncoder[RecursiveAdtExample]
     implicit val circeEncoder8: TaggedEncoder[Circe, RecursiveAdtExample] = mkTag[Circe](encodeRecursiveAdtExample)
-    private implicit val encodeRecursiveWithOptionExample: Encoder[RecursiveWithOptionExample] = deriveEncoder[RecursiveWithOptionExample]
+    private implicit val encodeRecursiveWithOptionExample: Encoder[RecursiveWithOptionExample] = deriveConfiguredEncoder[RecursiveWithOptionExample]
     implicit val circeEncoder9: TaggedEncoder[Circe, RecursiveWithOptionExample] = mkTag[Circe](encodeRecursiveWithOptionExample)
-    implicit val circeEncoder13: TaggedEncoder[Circe, ClassWithDefaults] = mkTag[Circe](deriveEncoder[ClassWithDefaults])
-    implicit val circeEncoder14: TaggedEncoder[Circe, ClassWithJsonKey] = mkTag[Circe](deriveEncoder[ClassWithJsonKey])
+    implicit val circeEncoder13: TaggedEncoder[Circe, ClassWithDefaults] = mkTag[Circe](deriveConfiguredEncoder[ClassWithDefaults])
+    implicit val circeEncoder14: TaggedEncoder[Circe, ClassWithJsonKey] = mkTag[Circe](deriveConfiguredEncoder[ClassWithJsonKey])
 
-    implicit val circeDecoder1: TaggedDecoder[Circe, AnyValInside] = mkTag[Circe](deriveDecoder[AnyValInside])
-    implicit val circeDecoder3: TaggedDecoder[Circe, Qux[Int]] = mkTag[Circe](deriveDecoder[Qux[Int]])
-    implicit val circeDecoder5: TaggedDecoder[Circe, Baz] = mkTag[Circe](deriveDecoder[Baz])
+    implicit val circeDecoder1: TaggedDecoder[Circe, AnyValInside] = mkTag[Circe](deriveConfiguredDecoder[AnyValInside])
+    implicit val circeDecoder3: TaggedDecoder[Circe, Qux[Int]] = mkTag[Circe](deriveConfiguredDecoder[Qux[Int]])
+    implicit val circeDecoder5: TaggedDecoder[Circe, Baz] = mkTag[Circe](deriveConfiguredDecoder[Baz])
     private implicit val decodeFoo: Decoder[Foo] = {
       implicit val decodeBar = Bar.decodeBar
       implicit val decodeBam = Bam.decodeBam
-      deriveDecoder[Foo]
+      deriveConfiguredDecoder[Foo]
     }
     implicit val circeDecoder6: TaggedDecoder[Circe, Foo] = mkTag[Circe](decodeFoo)
     implicit val circeDecoder4: TaggedDecoder[Circe, Seq[Foo]] = mkTag[Circe](Decoder.decodeSeq(circeDecoder6.inner))
-    implicit val circeDecoderSealed: TaggedDecoder[Circe, Sealed] = mkTag[Circe](deriveDecoder[Sealed])
-    private implicit val decodeRecursiveAdtExample: Decoder[RecursiveAdtExample] = deriveDecoder[RecursiveAdtExample]
+    implicit val circeDecoderSealed: TaggedDecoder[Circe, Sealed] = mkTag[Circe](deriveConfiguredDecoder[Sealed])
+    private implicit val decodeRecursiveAdtExample: Decoder[RecursiveAdtExample] = deriveConfiguredDecoder[RecursiveAdtExample]
     implicit val circeDecoder8: TaggedDecoder[Circe, RecursiveAdtExample] = mkTag[Circe](decodeRecursiveAdtExample)
-    private implicit val decodeRecursiveWithOptionExample: Decoder[RecursiveWithOptionExample] = deriveDecoder[RecursiveWithOptionExample]
+    private implicit val decodeRecursiveWithOptionExample: Decoder[RecursiveWithOptionExample] = deriveConfiguredDecoder[RecursiveWithOptionExample]
     implicit val circeDecoder9: TaggedDecoder[Circe, RecursiveWithOptionExample] = mkTag[Circe](decodeRecursiveWithOptionExample)
-    implicit val circeDecoder13: TaggedDecoder[Circe, ClassWithDefaults] = mkTag[Circe](deriveDecoder[ClassWithDefaults])
-    implicit val circeDecoder14: TaggedDecoder[Circe, ClassWithJsonKey] = mkTag[Circe](deriveDecoder[ClassWithJsonKey])
+    implicit val circeDecoder13: TaggedDecoder[Circe, ClassWithDefaults] = mkTag[Circe](deriveConfiguredDecoder[ClassWithDefaults])
+    implicit val circeDecoder14: TaggedDecoder[Circe, ClassWithJsonKey] = mkTag[Circe](deriveConfiguredDecoder[ClassWithJsonKey])
   }
 
   def testWithConfiguration(postfix: String, configuration: Configuration): Unit = {
