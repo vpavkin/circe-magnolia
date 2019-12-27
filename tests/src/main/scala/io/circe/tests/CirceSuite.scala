@@ -5,9 +5,8 @@ import cats.kernel.Eq
 import cats.syntax.{AllSyntax, EitherOps}
 import io.circe.testing.{ArbitraryInstances, EqInstances}
 import org.scalatest.FlatSpec
-import org.typelevel.discipline.Laws
-import scala.language.implicitConversions
 import org.scalatestplus.scalacheck.{Checkers, ScalaCheckDrivenPropertyChecks}
+import org.typelevel.discipline.Laws
 
 /**
   * An opinionated stack of traits to improve consistency and reduce boilerplate in circe tests.
