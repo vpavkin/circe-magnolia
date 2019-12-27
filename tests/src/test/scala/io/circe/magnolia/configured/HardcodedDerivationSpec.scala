@@ -11,14 +11,14 @@ import magnolia.{CaseClass, Magnolia, SealedTrait}
 // a Configuration object
 class HardcodedDerivationSpec extends CirceSuite {
   "Hardcoded Encoder deriver" should "match the hardcoded configured behavior" in {
-    assert(UserType.encoder(User("John", "Doe")) == parse(
+    assert(UserType.encoder(User("John", "Doe")).asRight[Throwable] == parse(
       """
         {
           "type": "user",
           "first_name": "John",
           "last_name": "Doe"
         }
-      """).right.get)
+      """))
   }
 }
 

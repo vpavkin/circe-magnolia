@@ -3,59 +3,11 @@ import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 
 lazy val buildSettings = Seq(
   organization := "io.circe",
-  scalaVersion := "2.12.10"
+  scalaVersion := "2.12.10",
+  crossScalaVersions := List("2.12.10", "2.13.1")
 )
 
-def compilerOptions(compilerVersion: String) = Seq(
-  "-deprecation",
-  "-encoding", "utf-8",
-  "-explaintypes",
-  "-feature",
-  "-language:existentials",
-  "-language:experimental.macros",
-  "-language:higherKinds",
-  "-language:implicitConversions",
-  "-unchecked",
-  "-Xcheckinit",
-  "-Xfatal-warnings",
-  "-Xfuture",
-  "-Xlint:adapted-args",
-  "-Xlint:by-name-right-associative",
-  "-Xlint:delayedinit-select",
-  "-Xlint:doc-detached",
-  "-Xlint:inaccessible",
-  "-Xlint:infer-any",
-  "-Xlint:missing-interpolator",
-  "-Xlint:nullary-override",
-  "-Xlint:nullary-unit",
-  "-Xlint:option-implicit",
-  "-Xlint:package-object-classes",
-  "-Xlint:poly-implicit-overload",
-  "-Xlint:private-shadow",
-  "-Xlint:stars-align",
-  "-Xlint:type-parameter-shadow",
-  "-Xlint:unsound-match",
-  "-Yno-adapted-args",
-  "-Ypartial-unification",
-  "-Ywarn-dead-code",
-  "-Ywarn-inaccessible",
-  "-Ywarn-infer-any",
-  "-Ywarn-nullary-override",
-  "-Ywarn-nullary-unit",
-  "-Ywarn-numeric-widen",
-  "-Ywarn-value-discard") ++ (
-  if (CrossVersion.partialVersion(compilerVersion).exists(_._2 >= 12)) Seq(
-    "-Xlint:constant",
-    "-Ywarn-extra-implicit",
-    "-Ywarn-unused:implicits",
-    "-Ywarn-unused:imports",
-    "-Ywarn-unused:locals",
-    "-Ywarn-unused:params",
-    "-Ywarn-unused:patvars",
-    "-Ywarn-unused:privates")
-  else Seq.empty)
-
-lazy val magnoliaVersion = "0.12.5"
+lazy val magnoliaVersion = "0.12.2"
 lazy val mercatorVersion = "0.2.1"
 lazy val circeVersion = "0.12.3"
 lazy val circeGenericExtrasVersion = "0.12.2"
@@ -64,7 +16,61 @@ lazy val scalatestVersion = "3.0.8"
 lazy val scalacheckVersion = "1.14.2"
 
 lazy val compilerSettings = Seq(
-  scalacOptions ++= compilerOptions(scalaVersion.value) ++ Seq("-Ywarn-macros:after"),
+  scalacOptions ++= Seq(
+    "-deprecation",
+    "-encoding", "utf-8",
+    "-explaintypes",
+    "-feature",
+    "-language:existentials",
+    "-language:experimental.macros",
+    "-language:higherKinds",
+    "-language:implicitConversions",
+    "-unchecked",
+    "-Xcheckinit",
+    "-Xfatal-warnings",
+    "-Xlint:adapted-args",
+    "-Xlint:delayedinit-select",
+    "-Xlint:doc-detached",
+    "-Xlint:inaccessible",
+    "-Xlint:infer-any",
+    "-Xlint:missing-interpolator",
+    "-Xlint:nullary-override",
+    "-Xlint:nullary-unit",
+    "-Xlint:option-implicit",
+    "-Xlint:package-object-classes",
+    "-Xlint:poly-implicit-overload",
+    "-Xlint:private-shadow",
+    "-Xlint:stars-align",
+    "-Xlint:type-parameter-shadow",
+    "-Ywarn-dead-code",
+    "-Ywarn-numeric-widen",
+    "-Ywarn-value-discard",
+    "-Xlint:constant",
+    "-Ywarn-macros:after",
+    "-Ywarn-extra-implicit",
+    "-Ywarn-unused:implicits",
+    "-Ywarn-unused:imports",
+    "-Ywarn-unused:locals",
+    "-Ywarn-unused:params",
+    "-Ywarn-unused:patvars",
+    "-Ywarn-unused:privates"),
+  scalacOptions ++= {
+    CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((2, y)) if y == 12 => Seq(
+        "-Xfuture",
+        "-Xlint:by-name-right-associative",
+        "-Xlint:unsound-match",
+        "-Yno-adapted-args",
+        "-Ypartial-unification",
+        "-Ywarn-inaccessible",
+        "-Ywarn-infer-any",
+        "-Ywarn-nullary-override",
+        "-Ywarn-nullary-unit",
+      )
+      case Some((2, y)) if y == 13 => Seq("-Ymacro-annotations")
+      case _                       => Seq.empty[String]
+    }
+  },
   scalacOptions in(Compile, console) --= Seq("-Ywarn-unused:imports", "-Xfatal-warnings")
 )
 

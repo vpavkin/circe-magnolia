@@ -1,7 +1,7 @@
 resolvers ++= Seq(
   Classpaths.typesafeReleases,
   Classpaths.sbtPluginReleases,
-  "jgit-repo" at "http://download.eclipse.org/jgit/maven"
+  "jgit-repo" at "https://download.eclipse.org/jgit/maven"
 )
 
 addSbtPlugin("org.scalastyle" %% "scalastyle-sbt-plugin" % "1.0.0")

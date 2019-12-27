@@ -145,8 +145,8 @@ class ConfiguredAutoDerivedEquivalenceSuite extends CirceSuite {
           {
             "SubtypeWithExplicitInstance": ["1"]
           }
-        """).right.get
-    assert(magnoliaEncoder.apply(SubtypeWithExplicitInstance(List("1"))) == expected)
+        """)
+    assert(magnoliaEncoder.apply(SubtypeWithExplicitInstance(List("1"))).asRight[Throwable] == expected)
   }
 }
 

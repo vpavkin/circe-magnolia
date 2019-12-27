@@ -4,7 +4,6 @@ import io.circe.Encoder
 import io.circe.magnolia.MagnoliaEncoder
 import io.circe.magnolia.configured.Configuration
 import magnolia.{CaseClass, Magnolia, SealedTrait}
-import scala.language.experimental.macros
 
 object auto {
 
