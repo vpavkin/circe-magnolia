@@ -7,7 +7,7 @@ lazy val buildSettings = Seq(
   crossScalaVersions := List("2.12.10", "2.13.1")
 )
 
-lazy val magnoliaVersion = "0.12.2"
+lazy val magnoliaVersion = "0.12.6"
 lazy val mercatorVersion = "0.2.1"
 lazy val circeVersion = "0.12.3"
 lazy val circeGenericExtrasVersion = "0.12.2"
