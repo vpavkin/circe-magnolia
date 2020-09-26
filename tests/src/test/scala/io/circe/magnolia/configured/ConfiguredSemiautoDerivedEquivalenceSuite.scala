@@ -29,7 +29,7 @@ class ConfiguredSemiautoDerivedEquivalenceSuite extends CirceSuite {
     implicit val magnoliaEncoder20: TaggedEncoder[Magnolia, Seq[Foo]] = mkTag[Magnolia](Encoder.encodeSeq(magnoliaEncoder7.inner))
     private implicit val encodeRecursiveAdtExample: Encoder[RecursiveAdtExample] = deriveConfiguredMagnoliaEncoder[RecursiveAdtExample]
     implicit val magnoliaEncoder8: TaggedEncoder[Magnolia, RecursiveAdtExample] = mkTag[Magnolia](encodeRecursiveAdtExample)
-    private implicit val encodeRecursiveWithOptionExample: Encoder[RecursiveWithOptionExample] = deriveConfiguredMagnoliaEncoder[RecursiveWithOptionExample]
+    private implicit lazy val encodeRecursiveWithOptionExample: Encoder[RecursiveWithOptionExample] = deriveConfiguredMagnoliaEncoder[RecursiveWithOptionExample]
     implicit val magnoliaEncoder9: TaggedEncoder[Magnolia, RecursiveWithOptionExample] = mkTag[Magnolia](encodeRecursiveWithOptionExample)
     implicit val magnoliaEncoder1: TaggedEncoder[Magnolia, AnyValInside] = mkTag[Magnolia](deriveConfiguredMagnoliaEncoder[AnyValInside])
     implicit val magnoliaEncoder13: TaggedEncoder[Magnolia, ClassWithDefaults] = mkTag[Magnolia](deriveConfiguredMagnoliaEncoder[ClassWithDefaults])
@@ -46,7 +46,7 @@ class ConfiguredSemiautoDerivedEquivalenceSuite extends CirceSuite {
     implicit val magnoliaDecoder12: TaggedDecoder[Magnolia, Seq[Foo]] = mkTag[Magnolia](Decoder.decodeSeq(magnoliaDecoder7.inner))
     private implicit val decodeRecursiveAdtExample: Decoder[RecursiveAdtExample] = deriveConfiguredMagnoliaDecoder[RecursiveAdtExample]
     implicit val magnoliaDecoder8: TaggedDecoder[Magnolia, RecursiveAdtExample] = mkTag[Magnolia](decodeRecursiveAdtExample)
-    private implicit val decodeRecursiveWithOptionExample: Decoder[RecursiveWithOptionExample] = deriveConfiguredMagnoliaDecoder[RecursiveWithOptionExample]
+    private implicit lazy val decodeRecursiveWithOptionExample: Decoder[RecursiveWithOptionExample] = deriveConfiguredMagnoliaDecoder[RecursiveWithOptionExample]
     implicit val magnoliaDecoder9: TaggedDecoder[Magnolia, RecursiveWithOptionExample] = mkTag[Magnolia](decodeRecursiveWithOptionExample)
     implicit val magnoliaDecoder1: TaggedDecoder[Magnolia, AnyValInside] = mkTag[Magnolia](deriveConfiguredMagnoliaDecoder[AnyValInside])
     implicit val magnoliaDecoder13: TaggedDecoder[Magnolia, ClassWithDefaults] = mkTag[Magnolia](deriveConfiguredMagnoliaDecoder[ClassWithDefaults])

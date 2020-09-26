@@ -28,9 +28,9 @@ class SemiautoDerivedSuite extends CirceSuite {
   implicit val decodeRecursiveAdtExample: Decoder[RecursiveAdtExample] = deriveMagnoliaDecoder
   implicit val encodeRecursiveAdtExample: Encoder[RecursiveAdtExample] = deriveMagnoliaEncoder
 
-  implicit val decodeRecursiveWithOptionExample: Decoder[RecursiveWithOptionExample] =
+  implicit lazy val decodeRecursiveWithOptionExample: Decoder[RecursiveWithOptionExample] =
     deriveMagnoliaDecoder
-  implicit val encodeRecursiveWithOptionExample: Encoder[RecursiveWithOptionExample] =
+  implicit lazy val encodeRecursiveWithOptionExample: Encoder[RecursiveWithOptionExample] =
     deriveMagnoliaEncoder
 
   checkLaws("Codec[Tuple1[Int]]", CodecTests[Tuple1[Int]].unserializableCodec)
