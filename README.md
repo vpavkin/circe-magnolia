@@ -109,11 +109,33 @@ import Foo._, Bar._
 
 Another outstanding issue with auto is that it doesn't pick up default instances for tagged types.
 
+### FAQ
+
+#### I'm getting StackOverflowException / UninitializedFieldError when I try to use semiauto
+
+This is probably due to trying to derive for indirect recursive type like this:
+
+```
+case class RecursiveWithOptionExample(o: Option[RecursiveWithOptionExample])
+
+object RecursiveWithOptionExample {
+  implicit val decoder: Decoder[RecursiveWithOptionExample] = deriveMagnoliaDecoder[RecursiveWithOptionExample]
+}
+```
+
+The cause is that when the Scala compiler tries to resolve `Decoder[Option[RecursiveWithOptionExample]]`, it finds
+and use the same decoder instance we're trying to define! (if you use `implicit def` instead, you'll see StackOverflowException for the same reason)
+
+The fix is to make your definition `lazy`.
+
+```
+implicit lazy val decoder: Decoder[RecursiveWithOptionExample] = deriveMagnoliaDecoder[RecursiveWithOptionExample]
+```
+
 ### Further work
 
 1) Facilitate [magnolia development](https://github.com/propensive/magnolia/issues/107) to make auto derivation work the same way as in `circe-generic`.
 2) Add derivation of partial/patch codecs.
-3) Configurable derivation should be very simple to do with Magnolia. Potentially this can provide huge flexibility to the `circe` users.
 
 ### Contributors
 

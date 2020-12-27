@@ -2,9 +2,9 @@ package io.circe.tests
 
 import cats.instances.AllInstances
 import cats.kernel.Eq
-import cats.syntax.{AllSyntax, EitherOps}
+import cats.syntax.{EitherOps, AllSyntax}
 import io.circe.testing.{ArbitraryInstances, EqInstances}
-import org.scalatest.FlatSpec
+import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatestplus.scalacheck.{Checkers, ScalaCheckDrivenPropertyChecks}
 import org.typelevel.discipline.Laws
 
@@ -12,7 +12,7 @@ import org.typelevel.discipline.Laws
   * An opinionated stack of traits to improve consistency and reduce boilerplate in circe tests.
   */
 trait CirceSuite
-    extends FlatSpec
+    extends AnyFlatSpec
     with ScalaCheckDrivenPropertyChecks
     with AllInstances
     with AllSyntax

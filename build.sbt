@@ -3,16 +3,15 @@ import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 
 lazy val buildSettings = Seq(
   organization := "io.circe",
-  scalaVersion := "2.12.10",
-  crossScalaVersions := List("2.12.10", "2.13.1")
+  scalaVersion := "2.12.12",
+  crossScalaVersions := List("2.12.12", "2.13.4")
 )
 
-lazy val magnoliaVersion = "0.12.2"
-lazy val mercatorVersion = "0.2.1"
-lazy val circeVersion = "0.12.3"
-lazy val circeGenericExtrasVersion = "0.12.2"
+lazy val magnoliaVersion = "0.17.0"
+lazy val circeVersion = "0.13.0"
+lazy val circeGenericExtrasVersion = "0.13.0"
 lazy val shapelessVersion = "2.3.3"
-lazy val scalatestVersion = "3.0.8"
+lazy val scalatestVersion = "3.2.2"
 lazy val scalacheckVersion = "1.14.3"
 
 lazy val compilerSettings = Seq(
@@ -79,7 +78,7 @@ lazy val allSettings = buildSettings ++ compilerSettings ++ publishSettings
 lazy val coreDependencies = libraryDependencies ++= Seq(
   "io.circe" %%% "circe-core" % circeVersion,
   "com.propensive" %%% "magnolia" % magnoliaVersion,
-  "com.propensive" %%% "mercator" % mercatorVersion
+  "org.scala-lang" % "scala-reflect" % scalaVersion.value,
 )
 
 lazy val testDependencies = libraryDependencies ++= Seq(
@@ -124,7 +123,8 @@ lazy val tests = crossProject(JSPlatform, JVMPlatform).crossType(CrossType.Pure)
   .settings(coreDependencies)
   .settings(testDependencies)
   .settings(
-    coverageExcludedPackages :=".*"
+    // Coverage disabled due to https://github.com/scoverage/scalac-scoverage-plugin/issues/269
+    // coverageExcludedPackages :=".*"
   )
   .jsConfigure(_.enablePlugins(ScalaJSBundlerPlugin))
   .dependsOn(derivation)

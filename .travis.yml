@@ -2,8 +2,8 @@ sudo: true
 language: scala
 
 scala:
-  - 2.12.6
-  - 2.13.1
+  - 2.12.12
+  - 2.13.4
 
 jdk:
   - openjdk8
@@ -14,7 +14,9 @@ cache:
     - $HOME/.sbt/boot
 
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION clean coverage validate && sbt ++$TRAVIS_SCALA_VERSION coverageReport;
+  # TODO Coverage disabled due to https://github.com/scoverage/scalac-scoverage-plugin/issues/269
+  #  - sbt ++$TRAVIS_SCALA_VERSION clean coverage validate && sbt ++$TRAVIS_SCALA_VERSION coverageReport;
+  - sbt ++$TRAVIS_SCALA_VERSION clean validate
 
 
   # See http://www.scala-sbt.org/0.13/docs/Travis-CI-with-sbt.html
@@ -22,4 +24,5 @@ script:
   - find $HOME/.sbt -name "*.lock" | xargs -r rm
   - find $HOME/.ivy2 -name "ivydata-*.properties" | xargs -r rm
 
-after_success: bash <(curl -s https://codecov.io/bash)
+# TODO Coverage disabled due to https://github.com/scoverage/scalac-scoverage-plugin/issues/269
+# after_success: bash <(curl -s https://codecov.io/bash)
