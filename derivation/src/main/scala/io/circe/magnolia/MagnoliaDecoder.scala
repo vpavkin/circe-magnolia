@@ -5,7 +5,6 @@ import io.circe.{Decoder, DecodingFailure, HCursor}
 import io.circe.Decoder.Result
 import io.circe.magnolia.configured.Configuration
 import magnolia._
-import mercator._
 
 private[magnolia] object MagnoliaDecoder {
 
@@ -29,28 +28,28 @@ private[magnolia] object MagnoliaDecoder {
     if (configuration.useDefaults) {
       new Decoder[T] {
         override def apply(c: HCursor): Result[T] = {
-          caseClass.constructMonadic { p =>
+          caseClass.constructEither { p =>
             val key = paramJsonKeyLookup.getOrElse(p.label, throw new IllegalStateException("Looking up a parameter label should always yield a value. This is a bug"))
             val keyCursor = c.downField(key)
             keyCursor.focus match {
-              case Some(json) => json.as[p.PType](p.typeclass)
+              case Some(json) => p.typeclass.decodeJson(json)
               case None => p.default.fold {
                 // Some decoders (in particular, the default Option[T] decoder) do special things when a key is missing,
                 // so we give them a chance to do their thing here.
                 p.typeclass.tryDecode(keyCursor)
-              }(Right(_): Either[DecodingFailure, p.PType])
+              }(x => Right(x))
             }
-          }
+          }.leftMap(_.head)
         }
       }
     }
     else {
       new Decoder[T] {
         def apply(c: HCursor): Result[T] = {
-          caseClass.constructMonadic { p =>
+          caseClass.constructEither { p =>
             p.typeclass.tryDecode(c.downField(paramJsonKeyLookup.getOrElse(p.label, throw new IllegalStateException("Looking up a parameter label should always yield a value. This is a bug"))))
           }
-        }
+        }.leftMap(_.head)
       }
     }
   }
