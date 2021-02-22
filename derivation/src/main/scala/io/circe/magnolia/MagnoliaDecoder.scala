@@ -32,7 +32,7 @@ private[magnolia] object MagnoliaDecoder {
             val key = paramJsonKeyLookup.getOrElse(p.label, throw new IllegalStateException("Looking up a parameter label should always yield a value. This is a bug"))
             val keyCursor = c.downField(key)
             keyCursor.focus match {
-              case Some(json) => p.typeclass.decodeJson(json)
+              case Some(_) => p.typeclass.tryDecode(keyCursor)
               case None => p.default.fold {
                 // Some decoders (in particular, the default Option[T] decoder) do special things when a key is missing,
                 // so we give them a chance to do their thing here.
