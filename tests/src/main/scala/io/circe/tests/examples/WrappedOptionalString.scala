@@ -1,17 +1,15 @@
 package io.circe.tests.examples
 
 import cats.kernel.Eq
-import io.circe.{ Decoder, Encoder }
+import io.circe.{Decoder, Encoder}
 import org.scalacheck.Arbitrary
 
-case class OptionalString(value: String) {
-  def toOption: Option[String] = value match {
-    case "" => None
+case class OptionalString(value: String):
+  def toOption: Option[String] = value match
+    case ""    => None
     case other => Some(other)
-  }
-}
 
-object OptionalString {
+object OptionalString:
   def fromOption(o: Option[String]): OptionalString =
     OptionalString(o.getOrElse(""))
 
@@ -25,11 +23,10 @@ object OptionalString {
 
   implicit val arbitraryOptionalString: Arbitrary[OptionalString] =
     Arbitrary(Arbitrary.arbitrary[Option[String]].map(fromOption))
-}
 
 case class WrappedOptionalField(f: OptionalString)
 
-object WrappedOptionalField {
+object WrappedOptionalField:
   implicit val decodeWrappedOptionalField: Decoder[WrappedOptionalField] =
     Decoder.forProduct1("f")(WrappedOptionalField.apply)
 
@@ -41,4 +38,3 @@ object WrappedOptionalField {
 
   implicit val arbitraryWrappedOptionalField: Arbitrary[WrappedOptionalField] =
     Arbitrary(Arbitrary.arbitrary[OptionalString].map(WrappedOptionalField(_)))
-}

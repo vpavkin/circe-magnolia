@@ -1,19 +1,18 @@
 package io.circe.magnolia.incompat
 
-
-import io.circe._
+import io.circe.*
 import io.circe.magnolia.CirceMagnoliaSuite
 import org.scalatest.EitherValues
 
-/**
-  * This is another semantical difference from shapeless-based circe derivation.
-  * Shapeless generic skips intermediate traits/abstract classes and forms a coproduct of only leaf types.
-  * This makes perfect sense for many scenarios, JSON included.
+/** This is another semantical difference from shapeless-based circe derivation.
+  * Shapeless generic skips intermediate traits/abstract classes and forms a
+  * coproduct of only leaf types. This makes perfect sense for many scenarios,
+  * JSON included.
   *
-  * Magnolia, on the other hand, dispatches through all intermediate types.
-  * For encoding it's not that bad, but for decoding it's a showstopper. See tests.
+  * Magnolia, on the other hand, dispatches through all intermediate types. For
+  * encoding it's not that bad, but for decoding it's a showstopper. See tests.
   */
-class IntermediateTraitsTest extends CirceMagnoliaSuite with EitherValues {
+class IntermediateTraitsTest extends CirceMagnoliaSuite with EitherValues:
 
   sealed trait T
   case class A(a: Int) extends T
@@ -22,9 +21,8 @@ class IntermediateTraitsTest extends CirceMagnoliaSuite with EitherValues {
   case class C1(c1: Int) extends C
   case class C2(c2: String) extends C
 
-
-  import io.circe.magnolia.derivation.encoder.auto._
-  import io.circe.magnolia.derivation.decoder.auto._
+  import io.circe.magnolia.derivation.encoder.auto.*
+  import io.circe.magnolia.derivation.decoder.auto.*
 
   val encoder = Encoder[T]
   val decoder = Decoder[T]
@@ -45,4 +43,3 @@ class IntermediateTraitsTest extends CirceMagnoliaSuite with EitherValues {
     val j = decoder(HCursor.fromJson(json))
     assert(j.isRight, j)
   }
-}

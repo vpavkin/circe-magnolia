@@ -1,7 +1,7 @@
 resolvers ++= Seq(
   Classpaths.typesafeReleases,
   Classpaths.sbtPluginReleases,
-  "jgit-repo" at "https://download.eclipse.org/jgit/maven"
+  "jgit-repo".at("https://download.eclipse.org/jgit/maven")
 )
 
 addSbtPlugin("org.scalastyle" %% "scalastyle-sbt-plugin" % "1.0.0")
@@ -17,3 +17,4 @@ addSbtPlugin("org.scala-js" % "sbt-scalajs" % "1.2.0")
 addSbtPlugin("ch.epfl.scala" % "sbt-scalajs-bundler" % "0.18.0")
 addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.5.1")
 addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "3.9.5")
+addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.9.29")
