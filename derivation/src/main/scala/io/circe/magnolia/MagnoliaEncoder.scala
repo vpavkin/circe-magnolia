@@ -9,7 +9,7 @@ import scala.deriving.Mirror
 private[magnolia] object MagnoliaEncoder:
   self =>
 
-  inline def derived[T: Mirror.Of](using Configuration): Encoder[T] =
+  inline def derived[T](using c: Configuration, inline m: Mirror.Of[T]): Encoder[T] =
     val derivation = new Derivation[Encoder]:
       override def split[T](ctx: SealedTrait[Encoder, T]) = self.split[T](ctx)
       override def join[T](ctx: CaseClass[Encoder, T]): Encoder[T] =

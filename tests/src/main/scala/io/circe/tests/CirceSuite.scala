@@ -25,9 +25,9 @@ trait CirceSuite
   override def convertToEqualizer[T](left: T): Equalizer[T] =
     sys.error("Intentionally ambiguous implicit for Equalizer")
 //
-//  given prioritizedCatsSyntaxEither[A, B](
-//      eab: Either[A, B]
-//  ): EitherOps[A, B] = new EitherOps(eab)
+  implicit def prioritizedCatsSyntaxEither[A, B](
+      eab: Either[A, B]
+  ): EitherOps[A, B] = new EitherOps(eab)
 
   def checkLaws(name: String, ruleSet: Laws#RuleSet): Unit =
     ruleSet.all.properties.zipWithIndex.foreach {

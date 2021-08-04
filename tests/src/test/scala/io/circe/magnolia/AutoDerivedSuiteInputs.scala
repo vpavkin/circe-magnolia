@@ -87,37 +87,3 @@ object AutoDerivedSuiteInputs extends AllSyntax:
 
     given arbitraryRecursiveWithListExample
         : Arbitrary[RecursiveWithListExample] = Arbitrary(atDepth(0))
-
-
-
-  trait Tag1
-  trait Tag2
-  case class WithTaggedMembers(i: List[Int] @@ Tag1, s: String @@ Tag2)
-
-  object WithTaggedMembers:
-    given eqWithTaggedMembers: Eq[WithTaggedMembers] =
-      Eq.fromUniversalEquals
-
-    given arbitraryWithTaggedMembers: Arbitrary[WithTaggedMembers] =
-      Arbitrary(
-        for
-          i <- Arbitrary.arbitrary[List[Int]]
-          s <- Arbitrary.arbitrary[String]
-        yield WithTaggedMembers(
-          tag[Tag1](i),
-          tag[Tag2](s)
-        )
-      )
-
-  trait Tag
-  case class WithSeqOfTagged(s: Vector[String @@ Tag])
-
-  object WithSeqOfTagged:
-    given eqSeqOfWithSeqOfTagged: Eq[Seq[WithSeqOfTagged]] =
-      Eq.fromUniversalEquals
-
-    given arbitraryWithSeqOfTagged: Arbitrary[WithSeqOfTagged] =
-      Arbitrary(
-        for s <- Arbitrary.arbitrary[Vector[String]]
-        yield WithSeqOfTagged(s.map(tag[Tag](_)))
-      )

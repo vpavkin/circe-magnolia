@@ -2,7 +2,7 @@ package io.circe.tests
 
 import cats.instances.AllInstances
 import cats.kernel.Eq
-import cats.syntax.functor.*
+import cats.syntax.functor.given
 import io.circe.{Decoder, DecodingFailure, Encoder, Json}
 import io.circe.testing.ArbitraryInstances
 import org.scalacheck.{Arbitrary, Gen}
@@ -205,3 +205,38 @@ package examples:
         defaultOptNotSpecified = defaultOptNotSpecified
       )
     )
+
+@main def runTest =
+  import examples.*
+  import io.circe.magnolia.derivation.encoder.auto.given
+  val box = Box(3)
+  val qux = Qux(3, "s", 4)
+  val wub = Wub(4L)
+  val foo: Foo = Bar(4, "l")
+
+  import io.circe.syntax.given
+
+  println(box.asJson.spaces2)
+  println(qux.asJson.spaces2)
+  println(wub.asJson.spaces2)
+  println(foo.asJson.spaces2)
+/*
+
+{
+  "a" : 3
+}
+{
+  "i" : 3,
+  "a" : "s",
+  "j" : 4
+}
+{
+  "x" : 4
+}
+{
+  "Bar" : {
+    "i" : 4,
+    "s" : "l"
+  }
+}
+ */

@@ -11,7 +11,7 @@ import scala.deriving.*
 private[magnolia] object MagnoliaDecoder:
   self =>
 
-  inline def derived[T: Mirror.Of](using Configuration): Decoder[T] =
+  inline def derived[T](using c: Configuration, inline m: Mirror.Of[T]): Decoder[T] =
     val derivation = new Derivation[Decoder]:
       override def split[T](ctx: SealedTrait[Decoder, T]) = self.split[T](ctx)
       override def join[T](ctx: CaseClass[Decoder, T]): Decoder[T] =

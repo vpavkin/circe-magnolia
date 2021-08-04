@@ -15,11 +15,6 @@ class AutoDerivedSuite extends CirceSuite:
   import Encoder.*
   import Decoder.*
 
-  implicit private val encodeStringTag: Encoder[String @@ Tag] =
-    Encoder[String].narrow
-  implicit private val decodeStringTag: Decoder[String @@ Tag] =
-    Decoder[String].map(tag[Tag](_))
-
   checkLaws("Codec[Tuple1[Int]]", CodecTests[Tuple1[Int]].unserializableCodec)
   checkLaws(
     "Codec[(Int, Int, Foo)]",
@@ -78,10 +73,3 @@ class AutoDerivedSuite extends CirceSuite:
         Encoder[Sealed].apply(SubtypeWithExplicitInstance(xs): Sealed) === json
       )
   }
-
-  // TODO: tagged types don't work ATM, might be related to https://github.com/propensive/magnolia/issues/89
-  //  checkLaws("Codec[WithTaggedMembers]", CodecTests[WithTaggedMembers].unserializableCodec)
-  checkLaws(
-    "Codec[Seq[WithSeqOfTagged]]",
-    CodecTests[Seq[WithSeqOfTagged]].unserializableCodec
-  )
