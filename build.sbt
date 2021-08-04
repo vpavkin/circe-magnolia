@@ -8,59 +8,11 @@ lazy val buildSettings = Seq(
 
 lazy val magnoliaVersion = "0.0.1-M4"
 lazy val circeVersion = "0.15.0-M1"
-//lazy val circeGenericExtrasVersion = "0.13.0"
 lazy val shapelessVersion = "3.0.2"
 lazy val scalatestVersion = "3.2.9"
 lazy val scalacheckVersion = "1.15.4"
 
-lazy val compilerSettings = Seq(
-  scalacOptions ++= Seq(
-    //    "-deprecation",
-    //    "-encoding", "utf-8",
-    //    "-explaintypes",
-    //    "-feature",
-    //    "-language:existentials",
-    //    "-language:experimental.macros",
-    //    "-language:higherKinds",
-    //    "-language:implicitConversions",
-    //    "-unchecked",
-    //    "-Xcheckinit",
-    //    "-Xfatal-warnings",
-    //    "-Xlint:adapted-args",
-    //    "-Xlint:delayedinit-select",
-    //    "-Xlint:doc-detached",
-    //    "-Xlint:inaccessible",
-    //    "-Xlint:infer-any",
-    //    "-Xlint:missing-interpolator",
-    //    "-Xlint:nullary-override",
-    //    "-Xlint:nullary-unit",
-    //    "-Xlint:option-implicit",
-    //    "-Xlint:package-object-classes",
-    //    "-Xlint:poly-implicit-overload",
-    //    "-Xlint:private-shadow",
-    //    "-Xlint:stars-align",
-    //    "-Xlint:type-parameter-shadow",
-    //    "-Ywarn-dead-code",
-    //    "-Ywarn-numeric-widen",
-    //    "-Ywarn-value-discard",
-    //    "-Xlint:constant",
-    //    "-Ywarn-macros:after",
-    //    "-Ywarn-extra-implicit",
-    //    "-Ywarn-unused:implicits",
-    //    "-Ywarn-unused:imports",
-    //    "-Ywarn-unused:locals",
-    //    "-Ywarn-unused:params",
-    //    "-Ywarn-unused:patvars",
-    //    "-Ywarn-unused:privates"
-    "-indent",
-    "-rewrite",
-    "-explain-types",
-    "-encoding",
-    "UTF-8"
-  )
-)
-
-lazy val allSettings = buildSettings ++ compilerSettings ++ publishSettings
+lazy val allSettings = buildSettings ++ publishSettings
 
 lazy val coreDependencies = libraryDependencies ++= Seq(
   "io.circe" %%% "circe-core" % circeVersion,
@@ -68,10 +20,8 @@ lazy val coreDependencies = libraryDependencies ++= Seq(
 )
 
 lazy val testDependencies = libraryDependencies ++= Seq(
-  "org.typelevel" %% "shapeless3-deriving" % shapelessVersion,
   "io.circe" %%% "circe-parser" % circeVersion,
   "io.circe" %%% "circe-generic" % circeVersion,
-//  "io.circe" %%% "circe-generic-extras" % circeGenericExtrasVersion,
   "io.circe" %%% "circe-testing" % circeVersion,
   "org.scalacheck" %%% "scalacheck" % scalacheckVersion,
   "org.scalatest" %%% "scalatest" % scalatestVersion,
@@ -151,6 +101,11 @@ lazy val publishSettings = Seq(
         <id>vpavkin</id>
         <name>Vladimir Pavkin</name>
         <url>http://pavkin.ru</url>
+      </developer>
+      <developer>
+        <id>funfunfine</id>
+        <name>Anton Voytsishevskiy</name>
+        <url>https://t.me/funfunfine</url>
       </developer>
     </developers>
 )
