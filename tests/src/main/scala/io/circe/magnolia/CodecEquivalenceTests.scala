@@ -4,11 +4,10 @@ import cats.instances.either.*
 import cats.kernel.Eq
 import cats.laws.*
 import cats.laws.discipline.*
-import io.circe.magnolia.tags.{TaggedDecoder, TaggedEncoder}
+import io.circe.magnolia.tags.*
 import io.circe.{Decoder, Encoder, Json}
 import org.scalacheck.{Arbitrary, Prop, Shrink}
 import org.typelevel.discipline.Laws
-import shapeless.tag.@@
 
 trait CodecEquivalenceLaws[A]:
   def circeDecoder: Decoder[A] @@ tags.Circe

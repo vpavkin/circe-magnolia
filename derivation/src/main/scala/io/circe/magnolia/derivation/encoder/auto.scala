@@ -9,6 +9,6 @@ import scala.deriving.Mirror
 
 object auto:
 
-  inline given [T](using Mirror.Of[T]): Encoder[T] =
+  inline given autoencoder[T](using Mirror.Of[T]): Encoder[T] =
     given Configuration = Configuration.default
     MagnoliaEncoder.derived[T]

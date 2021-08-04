@@ -5,15 +5,17 @@ import cats.kernel.Eq
 import cats.syntax.{EitherOps, AllSyntax}
 import io.circe.testing.{ArbitraryInstances, EqInstances}
 import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatestplus.scalacheck.{Checkers, ScalaCheckDrivenPropertyChecks}
 import org.typelevel.discipline.Laws
+import org.scalacheck.Properties
+import org.scalatestplus.scalacheck.Checkers
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
 /** An opinionated stack of traits to improve consistency and reduce boilerplate
   * in circe tests.
   */
 trait CirceSuite
     extends AnyFlatSpec
-    with ScalaCheckDrivenPropertyChecks
+    with ScalaCheckPropertyChecks
     with AllInstances
     with AllSyntax
     with ArbitraryInstances
@@ -22,10 +24,10 @@ trait CirceSuite
 
   override def convertToEqualizer[T](left: T): Equalizer[T] =
     sys.error("Intentionally ambiguous implicit for Equalizer")
-
-  implicit def prioritizedCatsSyntaxEither[A, B](
-      eab: Either[A, B]
-  ): EitherOps[A, B] = new EitherOps(eab)
+//
+//  given prioritizedCatsSyntaxEither[A, B](
+//      eab: Either[A, B]
+//  ): EitherOps[A, B] = new EitherOps(eab)
 
   def checkLaws(name: String, ruleSet: Laws#RuleSet): Unit =
     ruleSet.all.properties.zipWithIndex.foreach {
@@ -33,6 +35,6 @@ trait CirceSuite
       case ((id, prop), _) => it should s"obey $id" in check(prop)
     }
 
-  implicit def eqSeq[A: Eq]: Eq[Seq[A]] = Eq.by((_: Seq[A]).toVector)(
+  given eqSeq[A: Eq]: Eq[Seq[A]] = Eq.by((_: Seq[A]).toVector)(
     cats.kernel.instances.vector.catsKernelStdEqForVector[A]
   )

@@ -7,7 +7,6 @@ import io.circe.{Decoder, DecodingFailure, Encoder, Json}
 import io.circe.testing.ArbitraryInstances
 import org.scalacheck.{Arbitrary, Gen}
 import io.circe.magnolia.JsonKey
-import io.circe.generic.extras.JsonKey as GeJsonKey
 
 package object examples extends AllInstances with ArbitraryInstances:
   val glossary: Json = Json.obj(
@@ -38,23 +37,23 @@ package object examples extends AllInstances with ArbitraryInstances:
     )
   )
 
-package examples {
+package examples:
 
   import io.circe.HCursor
 
   case class Box[A](a: A)
 
   object Box:
-    implicit def eqBox[A: Eq]: Eq[Box[A]] = Eq.by(_.a)
-    implicit def arbitraryBox[A](implicit A: Arbitrary[A]): Arbitrary[Box[A]] =
+    given [A: Eq]: Eq[Box[A]] = Eq.by(_.a)
+    given [A](using A: Arbitrary[A]): Arbitrary[Box[A]] =
       Arbitrary(A.arbitrary.map(Box(_)))
 
   case class Qux[A](i: Int, a: A, j: Int)
 
   object Qux:
-    implicit def eqQux[A: Eq]: Eq[Qux[A]] = Eq.by(q => (q.i, q.a, q.j))
+    given [A: Eq]: Eq[Qux[A]] = Eq.by(q => (q.i, q.a, q.j))
 
-    implicit def arbitraryQux[A](implicit A: Arbitrary[A]): Arbitrary[Qux[A]] =
+    given [A](using A: Arbitrary[A]): Arbitrary[Qux[A]] =
       Arbitrary(
         for
           i <- Arbitrary.arbitrary[Int]
@@ -66,8 +65,8 @@ package examples {
   case class Wub(x: Long)
 
   object Wub:
-    implicit val eqWub: Eq[Wub] = Eq.by(_.x)
-    implicit val arbitraryWub: Arbitrary[Wub] = Arbitrary(
+    given Eq[Wub] = Eq.by(_.x)
+    given Arbitrary[Wub] = Arbitrary(
       Arbitrary.arbitrary[Long].map(Wub(_))
     )
 
@@ -81,8 +80,8 @@ package examples {
   case class Bam(w: Wub, d: Double) extends Foo
 
   object Bar:
-    implicit val eqBar: Eq[Bar] = Eq.fromUniversalEquals
-    implicit val arbitraryBar: Arbitrary[Bar] = Arbitrary(
+    given Eq[Bar] = Eq.fromUniversalEquals
+    given Arbitrary[Bar] = Arbitrary(
       for
         i <- Arbitrary.arbitrary[Int]
         s <- Arbitrary.arbitrary[String]
@@ -97,19 +96,19 @@ package examples {
   case class Baz(xs: List[String])
 
   object Baz:
-    implicit val eqBaz: Eq[Baz] = Eq.fromUniversalEquals
-    implicit val arbitraryBaz: Arbitrary[Baz] = Arbitrary(
+    given Eq[Baz] = Eq.fromUniversalEquals
+    given Arbitrary[Baz] = Arbitrary(
       Arbitrary.arbitrary[List[String]].map(Baz.apply)
     )
 
-    implicit val decodeBaz: Decoder[Baz] = Decoder[List[String]].map(Baz(_))
-    implicit val encodeBaz: Encoder[Baz] = Encoder.instance { case Baz(xs) =>
+    given Decoder[Baz] = Decoder[List[String]].map(Baz(_))
+    given Encoder[Baz] = Encoder.instance { case Baz(xs) =>
       Json.fromValues(xs.map(Json.fromString))
     }
 
   object Bam:
-    implicit val eqBam: Eq[Bam] = Eq.fromUniversalEquals
-    implicit val arbitraryBam: Arbitrary[Bam] = Arbitrary(
+    given Eq[Bam] = Eq.fromUniversalEquals
+    given Arbitrary[Bam] = Arbitrary(
       for
         w <- Arbitrary.arbitrary[Wub]
         d <- Arbitrary.arbitrary[Double]
@@ -124,9 +123,9 @@ package examples {
       }(Wub.encodeWub, implicitly)
 
   object Foo:
-    implicit val eqFoo: Eq[Foo] = Eq.fromUniversalEquals
+    given Eq[Foo] = Eq.fromUniversalEquals
 
-    implicit val arbitraryFoo: Arbitrary[Foo] = Arbitrary(
+    given Arbitrary[Foo] = Arbitrary(
       Gen.oneOf(
         Arbitrary.arbitrary[Bar],
         Arbitrary.arbitrary[Bam]
@@ -150,28 +149,28 @@ package examples {
   final case class AnotherSubtype(i: Int) extends Sealed
 
   object Sealed:
-    implicit val arbitrary: Arbitrary[Sealed] = Arbitrary(
+    given Arbitrary[Sealed] = Arbitrary(
       Gen.oneOf(
         Arbitrary.arbitrary[SubtypeWithExplicitInstance],
         Arbitrary.arbitrary[AnotherSubtype]
       )
     )
-    implicit val eq: Eq[Sealed] = Eq.fromUniversalEquals
+    given Eq[Sealed] = Eq.fromUniversalEquals
 
   object SubtypeWithExplicitInstance:
-    implicit val arbitrary: Arbitrary[SubtypeWithExplicitInstance] = Arbitrary(
+    given Arbitrary[SubtypeWithExplicitInstance] = Arbitrary(
       for strs <- Arbitrary.arbitrary[List[String]]
       yield SubtypeWithExplicitInstance(strs)
     )
 
-    implicit val encode: Encoder[SubtypeWithExplicitInstance] =
+    given Encoder[SubtypeWithExplicitInstance] =
       (a: SubtypeWithExplicitInstance) =>
         Json.fromValues(a.xs.map(Json.fromString))
-    implicit val decode: Decoder[SubtypeWithExplicitInstance] = (a: HCursor) =>
+    given Decoder[SubtypeWithExplicitInstance] = (a: HCursor) =>
       a.as[List[String]].map(SubtypeWithExplicitInstance(_))
 
   object AnotherSubtype:
-    implicit val arbitrary: Arbitrary[AnotherSubtype] = Arbitrary(
+    given Arbitrary[AnotherSubtype] = Arbitrary(
       for i <- Arbitrary.arbitrary[Int]
       yield AnotherSubtype(i)
     )
@@ -190,8 +189,8 @@ package examples {
   )
 
   object ClassWithDefaults:
-    implicit val eq: Eq[ClassWithDefaults] = Eq.fromUniversalEquals
-    implicit val arbitrary: Arbitrary[ClassWithDefaults] = Arbitrary(
+    given Eq[ClassWithDefaults] = Eq.fromUniversalEquals
+    given Arbitrary[ClassWithDefaults] = Arbitrary(
       for
         required <- Arbitrary.arbitrary[String]
         field <- Arbitrary.arbitrary[String]
@@ -206,22 +205,3 @@ package examples {
         defaultOptNotSpecified = defaultOptNotSpecified
       )
     )
-
-  final case class ClassWithJsonKey(
-      @GeJsonKey("Renamed") @JsonKey("Renamed") origName: String,
-      anotherField: String
-  )
-
-  object ClassWithJsonKey:
-    implicit val eq: Eq[ClassWithJsonKey] = Eq.fromUniversalEquals
-    implicit val arbitrary: Arbitrary[ClassWithJsonKey] = Arbitrary(
-      for
-        origName <- Arbitrary.arbitrary[String]
-        anotherField <- Arbitrary.arbitrary[String]
-      yield ClassWithJsonKey(
-        origName,
-        anotherField
-      )
-    )
-
-}

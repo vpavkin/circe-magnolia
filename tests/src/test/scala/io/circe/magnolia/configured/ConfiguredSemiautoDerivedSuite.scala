@@ -1,7 +1,6 @@
 package io.circe.magnolia.configured
 
 import io.circe.magnolia.DerivationError
-import io.circe.*
 import io.circe.magnolia.configured.ConfiguredSemiautoDerivedSuite.{
   DefaultConfig,
   KebabCase,
@@ -12,7 +11,6 @@ import io.circe.tests.CirceSuite
 import io.circe.tests.examples.{
   Bar,
   ClassWithDefaults,
-  ClassWithJsonKey,
   NonProfit,
   Organization,
   Public
@@ -21,6 +19,7 @@ import org.scalatest.Inside
 import io.circe.parser.parse
 import io.circe.magnolia.configured.decoder.semiauto.deriveConfiguredMagnoliaDecoder
 import io.circe.magnolia.configured.encoder.semiauto.deriveConfiguredMagnoliaEncoder
+import io.circe.*
 
 class ConfiguredSemiautoDerivedSuite extends CirceSuite with Inside:
 
@@ -152,23 +151,6 @@ class ConfiguredSemiautoDerivedSuite extends CirceSuite with Inside:
 
   }
 
-  it should "use JsonKey annotated name when encoding and decoding, taking precedence over any other transformation" in {
-    implicit val config = Configuration.default.withSnakeCaseMemberNames
-    val encoder = deriveConfiguredMagnoliaEncoder[ClassWithJsonKey]
-    val decoder = deriveConfiguredMagnoliaDecoder[ClassWithJsonKey]
-
-    val jsonResult = parse("""
-         {
-           "Renamed": "value",
-           "another_field": "another"
-         }
-      """)
-
-    val expected = ClassWithJsonKey("value", "another")
-    assert(jsonResult.flatMap(j => decoder.apply(j.hcursor)) == Right(expected))
-    assert(encoder.apply(expected).asRight[Throwable] == jsonResult)
-  }
-
   "Configuration#useDefaults" should "Use the parameter default value if key does not exist in JSON" in {
     assert(
       parse("""{"required": "req"}""").flatMap(j =>
@@ -233,7 +215,7 @@ class ConfiguredSemiautoDerivedSuite extends CirceSuite with Inside:
   }
 
   "Encoder derivation" should "fail if transforming parameter names has collisions" in {
-    implicit val config: Configuration =
+    given config: Configuration =
       Configuration.default.copy(transformMemberNames = _ => "sameKey")
 
     try
@@ -245,7 +227,7 @@ class ConfiguredSemiautoDerivedSuite extends CirceSuite with Inside:
   }
 
   "Encoder derivation" should "fail if transformed sealed trait subtype constructor name has collisions" in {
-    implicit val config =
+    given Configuration =
       Configuration.default.copy(transformConstructorNames = _ => "sameKey")
     try
       deriveConfiguredMagnoliaEncoder[Organization]
@@ -256,7 +238,7 @@ class ConfiguredSemiautoDerivedSuite extends CirceSuite with Inside:
   }
 
   "Decoder derivation" should "fail if transforming parameter names results in duplicate JSON keys" in {
-    implicit val config =
+    given Configuration =
       Configuration.default.copy(transformMemberNames = _ => "sameKey")
 
     try
@@ -268,7 +250,7 @@ class ConfiguredSemiautoDerivedSuite extends CirceSuite with Inside:
   }
 
   "Decoder derivation" should "fail if transformed sealed trait subtype constructor name has collisions if configured to use a discriminator" in {
-    implicit val config =
+    given Configuration =
       Configuration.default.copy(
         transformConstructorNames = _ => "sameKey",
         discriminator = Some("type")
@@ -282,7 +264,7 @@ class ConfiguredSemiautoDerivedSuite extends CirceSuite with Inside:
   }
 
   "Decoder derivation" should "fail if transformed sealed trait subtype constructor name has collisions if configured to NOT use a discriminator" in {
-    implicit val config = Configuration.default.copy(
+    given Configuration = Configuration.default.copy(
       transformConstructorNames = _ => "sameKey",
       discriminator = None
     )
@@ -297,8 +279,8 @@ class ConfiguredSemiautoDerivedSuite extends CirceSuite with Inside:
 object ConfiguredSemiautoDerivedSuite:
 
   object SnakeCaseAndDiscriminator:
-    implicit val configuration: Configuration =
-      defaults.defaultGenericConfiguration.withSnakeCaseMemberNames.withSnakeCaseConstructorNames
+    given configuration: Configuration =
+      Configuration.default.withSnakeCaseMemberNames.withSnakeCaseConstructorNames
         .withDiscriminator("type")
 
     val encoder: Encoder[Organization] =
@@ -307,7 +289,7 @@ object ConfiguredSemiautoDerivedSuite:
       deriveConfiguredMagnoliaDecoder[Organization]
 
   object DefaultConfig:
-    implicit val configuration: Configuration = Configuration.default
+    given configuration: Configuration = Configuration.default
 
     val encoder: Encoder[Organization] =
       deriveConfiguredMagnoliaEncoder[Organization]
@@ -315,7 +297,7 @@ object ConfiguredSemiautoDerivedSuite:
       deriveConfiguredMagnoliaDecoder[Organization]
 
   object WithDefaultValue:
-    implicit val configuration: Configuration =
+    given configuration: Configuration =
       Configuration.default.withDefaults
 
     val encoder: Encoder[ClassWithDefaults] =
@@ -324,7 +306,7 @@ object ConfiguredSemiautoDerivedSuite:
       deriveConfiguredMagnoliaDecoder[ClassWithDefaults]
 
   object KebabCase:
-    implicit val configuration: Configuration =
+    given configuration: Configuration =
       Configuration.default.withKebabCaseConstructorNames.withKebabCaseMemberNames
 
     val encoder: Encoder[Organization] =

@@ -10,9 +10,9 @@ case object East extends CardinalDirection
 case object West extends CardinalDirection
 
 object CardinalDirection:
-  implicit val eqCardinalDirection: Eq[CardinalDirection] =
+  given eqCardinalDirection: Eq[CardinalDirection] =
     Eq.fromUniversalEquals
-  implicit val arbitraryCardinalDirection: Arbitrary[CardinalDirection] =
+  given arbitraryCardinalDirection: Arbitrary[CardinalDirection] =
     Arbitrary(
       Gen.oneOf(North, South, East, West)
     )
@@ -26,9 +26,9 @@ case class NotACardinalDirectionAtAll(x: String)
     extends ExtendedCardinalDirection
 
 object ExtendedCardinalDirection:
-  implicit val eqExtendedCardinalDirection: Eq[ExtendedCardinalDirection] =
+  given eqExtendedCardinalDirection: Eq[ExtendedCardinalDirection] =
     Eq.fromUniversalEquals
-  implicit val arbitraryExtendedCardinalDirection
+  given arbitraryExtendedCardinalDirection
       : Arbitrary[ExtendedCardinalDirection] = Arbitrary(
     Gen.oneOf(
       Gen.const(North2),

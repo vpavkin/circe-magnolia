@@ -69,7 +69,7 @@ import io.circe.magnolia.configured.Configuration
 
 case class User(firstName: Int, lastName: String)
 
-implicit val configuration: Configuration = Configuration.default.withSnakeCaseMemberNames
+given configuration: Configuration = Configuration.default.withSnakeCaseMemberNames
 
 val encoder = deriveConfiguredMagnoliaEncoder[User]
 val decoder = deriveConfiguredMagnoliaDecoder[User]
@@ -119,12 +119,12 @@ This is probably due to trying to derive for indirect recursive type like this:
 case class RecursiveWithOptionExample(o: Option[RecursiveWithOptionExample])
 
 object RecursiveWithOptionExample {
-  implicit val decoder: Decoder[RecursiveWithOptionExample] = deriveMagnoliaDecoder[RecursiveWithOptionExample]
+  given decoder: Decoder[RecursiveWithOptionExample] = deriveMagnoliaDecoder[RecursiveWithOptionExample]
 }
 ```
 
 The cause is that when the Scala compiler tries to resolve `Decoder[Option[RecursiveWithOptionExample]]`, it finds
-and use the same decoder instance we're trying to define! (if you use `implicit def` instead, you'll see StackOverflowException for the same reason)
+and use the same decoder instance we're trying to define! (if you use `given` instead, you'll see StackOverflowException for the same reason)
 
 The fix is to make your definition `lazy`.
 

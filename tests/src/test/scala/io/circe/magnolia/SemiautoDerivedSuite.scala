@@ -6,28 +6,25 @@ import io.circe.testing.CodecTests
 import io.circe.tests.CirceSuite
 import io.circe.tests.examples.*
 import io.circe.{Decoder, Encoder, Json}
-import shapeless.test.illTyped
 
 class SemiautoDerivedSuite extends CirceSuite:
   import SemiautoDerivedSuiteInputs.*
 
-  implicit def decodeBox[A: Decoder]: Decoder[Box[A]] = deriveMagnoliaDecoder
-  implicit def encodeBox[A: Encoder]: Encoder[Box[A]] = deriveMagnoliaEncoder
+  given decodeBox[A: Decoder]: Decoder[Box[A]] = deriveMagnoliaDecoder
+  given encodeBox[A: Encoder]: Encoder[Box[A]] = deriveMagnoliaEncoder
 
-  implicit def decodeQux[A: Decoder]: Decoder[Qux[A]] = deriveMagnoliaDecoder
-  implicit def encodeQux[A: Encoder]: Encoder[Qux[A]] = deriveMagnoliaEncoder
+  given decodeQux[A: Decoder]: Decoder[Qux[A]] = deriveMagnoliaDecoder
+  given encodeQux[A: Encoder]: Encoder[Qux[A]] = deriveMagnoliaEncoder
 
-  implicit val decodeWub: Decoder[Wub] = deriveMagnoliaDecoder
-  implicit val encodeWub: Encoder[Wub] = deriveMagnoliaEncoder
-  implicit val decodeFoo: Decoder[Foo] = deriveMagnoliaDecoder
-  implicit val encodeFoo: Encoder[Foo] = deriveMagnoliaEncoder
+  given decodeWub: Decoder[Wub] = deriveMagnoliaDecoder
+  given encodeWub: Encoder[Wub] = deriveMagnoliaEncoder
+  given decodeFoo: Decoder[Foo] = deriveMagnoliaDecoder
+  given encodeFoo: Encoder[Foo] = deriveMagnoliaEncoder
 
-  implicit val decodeAnyValInside: Decoder[AnyValInside] = deriveMagnoliaDecoder
-  implicit val encodeAnyValInside: Encoder[AnyValInside] = deriveMagnoliaEncoder
 
-  implicit val decodeRecursiveAdtExample: Decoder[RecursiveAdtExample] =
+  given decodeRecursiveAdtExample: Decoder[RecursiveAdtExample] =
     deriveMagnoliaDecoder
-  implicit val encodeRecursiveAdtExample: Encoder[RecursiveAdtExample] =
+  given encodeRecursiveAdtExample: Encoder[RecursiveAdtExample] =
     deriveMagnoliaEncoder
 
   implicit lazy val decodeRecursiveWithOptionExample
@@ -55,7 +52,6 @@ class SemiautoDerivedSuite extends CirceSuite:
     "Codec[RecursiveWithOptionExample]",
     CodecTests[RecursiveWithOptionExample].unserializableCodec
   )
-  checkLaws("Codec[AnyValInside]", CodecTests[AnyValInside].unserializableCodec)
 
   "A generically derived codec" should "not interfere with base instances" in forAll {
     (is: List[Int]) =>
@@ -68,18 +64,18 @@ class SemiautoDerivedSuite extends CirceSuite:
   }
 
   it should "not come from nowhere" in {
-    illTyped("Decoder[OvergenerationExampleInner]")
-    illTyped("Encoder[OvergenerationExampleInner]")
+    assertTypeError("Decoder[OvergenerationExampleInner]")
+    assertTypeError("Encoder[OvergenerationExampleInner]")
 
-    illTyped("Decoder[OvergenerationExampleOuter0]")
-    illTyped("Encoder[OvergenerationExampleOuter0]")
-    illTyped("Decoder[OvergenerationExampleOuter1]")
-    illTyped("Encoder[OvergenerationExampleOuter1]")
+    assertTypeError("Decoder[OvergenerationExampleOuter0]")
+    assertTypeError("Encoder[OvergenerationExampleOuter0]")
+    assertTypeError("Decoder[OvergenerationExampleOuter1]")
+    assertTypeError("Encoder[OvergenerationExampleOuter1]")
   }
 
   it should "require instances for all parts" in {
-    illTyped("deriveMagnoliaDecoder[OvergenerationExampleInner0]")
-    illTyped("deriveMagnoliaDecoder[OvergenerationExampleInner1]")
-    illTyped("deriveMagnoliaEncoder[OvergenerationExampleInner0]")
-    illTyped("deriveMagnoliaEncoder[OvergenerationExampleInner1]")
+    assertTypeError("deriveMagnoliaDecoder[OvergenerationExampleInner0]")
+    assertTypeError("deriveMagnoliaDecoder[OvergenerationExampleInner1]")
+    assertTypeError("deriveMagnoliaEncoder[OvergenerationExampleInner0]")
+    assertTypeError("deriveMagnoliaEncoder[OvergenerationExampleInner1]")
   }

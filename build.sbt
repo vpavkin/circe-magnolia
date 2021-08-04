@@ -8,10 +8,10 @@ lazy val buildSettings = Seq(
 
 lazy val magnoliaVersion = "0.0.1-M4"
 lazy val circeVersion = "0.15.0-M1"
-lazy val circeGenericExtrasVersion = "0.13.0"
-lazy val shapelessVersion = "2.3.3"
-lazy val scalatestVersion = "3.2.2"
-lazy val scalacheckVersion = "1.14.3"
+//lazy val circeGenericExtrasVersion = "0.13.0"
+lazy val shapelessVersion = "3.0.2"
+lazy val scalatestVersion = "3.2.9"
+lazy val scalacheckVersion = "1.15.4"
 
 lazy val compilerSettings = Seq(
   scalacOptions ++= Seq(
@@ -68,13 +68,14 @@ lazy val coreDependencies = libraryDependencies ++= Seq(
 )
 
 lazy val testDependencies = libraryDependencies ++= Seq(
-//  "com.chuusai" %% "shapeless" % shapelessVersion,
-//  "io.circe" %%% "circe-parser" % circeVersion,
-//  "io.circe" %%% "circe-generic" % circeVersion,
+  "org.typelevel" %% "shapeless3-deriving" % shapelessVersion,
+  "io.circe" %%% "circe-parser" % circeVersion,
+  "io.circe" %%% "circe-generic" % circeVersion,
 //  "io.circe" %%% "circe-generic-extras" % circeGenericExtrasVersion,
-//  "io.circe" %%% "circe-testing" % circeVersion,
-//  "org.scalacheck" %%% "scalacheck" % scalacheckVersion,
-//  "org.scalatest" %%% "scalatest" % scalatestVersion
+  "io.circe" %%% "circe-testing" % circeVersion,
+  "org.scalacheck" %%% "scalacheck" % scalacheckVersion,
+  "org.scalatest" %%% "scalatest" % scalatestVersion,
+  "org.scalatestplus" %% "scalacheck-1-15" % "3.2.9.0"
 )
 
 lazy val circeMagnolia = project

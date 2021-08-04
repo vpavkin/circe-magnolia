@@ -1,14 +1,12 @@
 package io.circe.magnolia
 
-import io.circe.magnolia.derivation.decoder.auto.*
-import io.circe.magnolia.derivation.encoder.auto.*
+import io.circe.magnolia.derivation.decoder.auto.given
+import io.circe.magnolia.derivation.encoder.auto.given
 import io.circe.testing.CodecTests
 import io.circe.tests.CirceSuite
 import io.circe.tests.examples.*
 import io.circe.{Decoder, Encoder, Json}
-import shapeless.tag
-import shapeless.tag.@@
-import shapeless.test.illTyped
+import tags.*
 
 class AutoDerivedSuite extends CirceSuite:
   import AutoDerivedSuiteInputs.*
@@ -35,19 +33,6 @@ class AutoDerivedSuite extends CirceSuite:
     "Codec[OuterCaseClassExample]",
     CodecTests[OuterCaseClassExample].unserializableCodec
   )
-  checkLaws(
-    "Codec[RecursiveAdtExample]",
-    CodecTests[RecursiveAdtExample].unserializableCodec
-  )
-  checkLaws(
-    "Codec[RecursiveWithOptionExample]",
-    CodecTests[RecursiveWithOptionExample].unserializableCodec
-  )
-  checkLaws(
-    "Codec[RecursiveWithListExample]",
-    CodecTests[RecursiveWithListExample].unserializableCodec
-  )
-  checkLaws("Codec[AnyValInside]", CodecTests[AnyValInside].unserializableCodec)
 
   "A generically derived codec" should "not interfere with base instances" in forAll {
     (is: List[Int]) =>
@@ -60,13 +45,13 @@ class AutoDerivedSuite extends CirceSuite:
   }
 
   it should "not be derived for Object" in {
-    illTyped("Decoder[Object]")
-    illTyped("Encoder[Object]")
+    assertTypeError("Decoder[Object]")
+    assertTypeError("Encoder[Object]")
   }
 
   it should "not be derived for AnyRef" in {
-    illTyped("Decoder[AnyRef]")
-    illTyped("Encoder[AnyRef]")
+    assertTypeError("Decoder[AnyRef]")
+    assertTypeError("Encoder[AnyRef]")
   }
 
   "Generic decoders" should "not interfere with defined decoders" in forAll {

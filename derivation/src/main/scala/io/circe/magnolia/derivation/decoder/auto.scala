@@ -8,6 +8,6 @@ import scala.deriving.*
 
 object auto:
 
-  inline given [T](using Mirror.Of[T]): Decoder[T] =
+  inline given autodecoder [T](using Mirror.Of[T]): Decoder[T] =
     given Configuration = Configuration.default
     MagnoliaDecoder.derived[T]
