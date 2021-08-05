@@ -127,4 +127,4 @@ lazy val sharedReleaseProcess = Seq(
   )
 )
 
-addCommandAlias("validate", ";compile;testsJVM/test;testsJS/test")
+addCommandAlias("validate", ";compile;tests/test")
