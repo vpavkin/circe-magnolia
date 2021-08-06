@@ -3,17 +3,9 @@ package io.circe.magnolia.configured.decoder
 import io.circe.Decoder
 import io.circe.magnolia.MagnoliaDecoder
 import io.circe.magnolia.configured.Configuration
-import magnolia.{CaseClass, Magnolia, SealedTrait}
+import magnolia1.*
+import scala.deriving.*
 
-object auto {
-
-  type Typeclass[T] = Decoder[T]
-
-  def combine[T](caseClass: CaseClass[Typeclass, T])(implicit configuration: Configuration): Typeclass[T] =
-    MagnoliaDecoder.combine(caseClass)
-
-  def dispatch[T](sealedTrait: SealedTrait[Typeclass, T])(implicit configuration: Configuration): Typeclass[T] =
-    MagnoliaDecoder.dispatch(sealedTrait)
-
-  implicit def magnoliaConfiguredDecoder[T]: Typeclass[T] = macro Magnolia.gen[T]
-}
+object auto:
+  inline given [T](using Configuration, Mirror.Of[T]): Decoder[T] =
+    MagnoliaDecoder.derived[T]

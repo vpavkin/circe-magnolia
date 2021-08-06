@@ -2,89 +2,140 @@ package io.circe.magnolia
 
 import io.circe.{Decoder, Encoder}
 import io.circe.tests.CirceSuite
-import io.circe.tests.examples._
-import shapeless.tag
-import shapeless.tag.@@
-import tags._
+import io.circe.tests.examples.*
+import tags.*
 
-class SemiautoDerivedEquivalenceSuite extends CirceSuite {
-  import SemiautoDerivedSuiteInputs._
+class SemiautoDerivedEquivalenceSuite extends CirceSuite:
+  import SemiautoDerivedSuiteInputs.*
 
-  object magnolia {
-    import io.circe.magnolia.derivation.decoder.semiauto._
-    import io.circe.magnolia.derivation.encoder.semiauto._
+  object semiautoMagnoliaInstances:
+    import io.circe.magnolia.derivation.decoder.semiauto.*
+    import io.circe.magnolia.derivation.encoder.semiauto.*
 
-    implicit val magnoliaEncoder3 = tag[Magnolia](deriveMagnoliaEncoder[Box[Int]])
-    implicit val magnoliaEncoder4 = tag[Magnolia](deriveMagnoliaEncoder[Qux[Int]])
-    implicit val magnoliaEncoder6 = tag[Magnolia](deriveMagnoliaEncoder[Baz])
-    implicit val magnoliaEncoder11 = tag[Magnolia](deriveMagnoliaEncoder[Wub])
-    implicit val magnoliaEncoder10 = tag[Magnolia](deriveMagnoliaEncoder[Bam])
-    implicit val magnoliaEncoder7 = tag[Magnolia](deriveMagnoliaEncoder[Foo])
-    private implicit val encodeRecursiveAdtExample: Encoder[RecursiveAdtExample] = deriveMagnoliaEncoder[RecursiveAdtExample]
-    implicit val magnoliaEncoder8 = tag[Magnolia](encodeRecursiveAdtExample)
-    private implicit lazy val encodeRecursiveWithOptionExample: Encoder[RecursiveWithOptionExample] = deriveMagnoliaEncoder[RecursiveWithOptionExample]
-    implicit val magnoliaEncoder9 = tag[Magnolia](encodeRecursiveWithOptionExample)
-    implicit val magnoliaEncoder1 = tag[Magnolia](deriveMagnoliaEncoder[AnyValInside])
-    implicit val magnoliaEncoder5: Encoder[Seq[Foo]] @@ Magnolia = tag[Magnolia](Encoder.encodeSeq(magnoliaEncoder7))
+    given magnoliaEncoder3: (Encoder[Box[Int]] @@ Magnolia) =
+      tag[Magnolia](deriveMagnoliaEncoder[Box[Int]])
+    given magnoliaEncoder4: (Encoder[Qux[Int]] @@ Magnolia) =
+      tag[Magnolia](deriveMagnoliaEncoder[Qux[Int]])
+    given magnoliaEncoder6: (Encoder[Baz] @@ Magnolia) =
+      tag[Magnolia](deriveMagnoliaEncoder[Baz])
+    given magnoliaEncoder11: (Encoder[Wub] @@ Magnolia) =
+      tag[Magnolia](deriveMagnoliaEncoder[Wub])
+    given magnoliaEncoder10: (Encoder[Bam] @@ Magnolia) =
+      tag[Magnolia](deriveMagnoliaEncoder[Bam])
+    given magnoliaEncoder7: (Encoder[Foo] @@ Magnolia) =
+      tag[Magnolia](deriveMagnoliaEncoder[Foo])
 
+    implicit private val encodeRecursiveAdtExample
+        : Encoder[RecursiveAdtExample] =
+      deriveMagnoliaEncoder[RecursiveAdtExample]
 
-    implicit val magnoliaDecoder3 = tag[Magnolia](deriveMagnoliaDecoder[Box[Int]])
-    implicit val magnoliaDecoder4 = tag[Magnolia](deriveMagnoliaDecoder[Qux[Int]])
-    implicit val magnoliaDecoder11 = tag[Magnolia](deriveMagnoliaDecoder[Wub])
-    implicit val magnoliaDecoder10 = tag[Magnolia](deriveMagnoliaDecoder[Bam])
-    implicit val magnoliaDecoder6 = tag[Magnolia](deriveMagnoliaDecoder[Baz])
-    implicit val magnoliaDecoder7 = tag[Magnolia](deriveMagnoliaDecoder[Foo])
-    private implicit val decoderREcursiveAdtExample: Decoder[RecursiveAdtExample] = deriveMagnoliaDecoder[RecursiveAdtExample]
-    implicit val magnoliaDecoder8 = tag[Magnolia](decoderREcursiveAdtExample)
-    private implicit lazy val decoderRecursiveWithOptionExample: Decoder[RecursiveWithOptionExample] = deriveMagnoliaDecoder[RecursiveWithOptionExample]
-    implicit val magnoliaDecoder9 = tag[Magnolia](decoderRecursiveWithOptionExample)
-    implicit val magnoliaDecoder1 = tag[Magnolia](deriveMagnoliaDecoder[AnyValInside])
-    implicit val magnoliaDecoder5 = tag[Magnolia](Decoder.decodeSeq(magnoliaDecoder7))
-  }
+    given magnoliaEncoder8: (Encoder[RecursiveAdtExample] @@ Magnolia) =
+      tag[Magnolia](encodeRecursiveAdtExample)
 
-  object circe {
+    implicit private lazy val encodeRecursiveWithOptionExample
+        : Encoder[RecursiveWithOptionExample] =
+      deriveMagnoliaEncoder[RecursiveWithOptionExample]
+    given magnoliaEncoder9: (Encoder[RecursiveWithOptionExample] @@ Magnolia) =
+      tag[Magnolia](encodeRecursiveWithOptionExample)
 
-    import io.circe.generic.semiauto._
+    given magnoliaEncoder5: (Encoder[Seq[Foo]] @@ Magnolia) =
+      tag[Magnolia](Encoder.encodeSeq(magnoliaEncoder7))
 
-    implicit val enc1 = deriveEncoder[Wub]
-    implicit val dec1 = deriveDecoder[Wub]
+    given magnoliaDecoder3: (Decoder[Box[Int]] @@ Magnolia) =
+      tag[Magnolia](deriveMagnoliaDecoder[Box[Int]])
+    given magnoliaDecoder4: (Decoder[Qux[Int]] @@ Magnolia) =
+      tag[Magnolia](deriveMagnoliaDecoder[Qux[Int]])
+    given magnoliaDecoder11: (Decoder[Wub] @@ Magnolia) =
+      tag[Magnolia](deriveMagnoliaDecoder[Wub])
+    given magnoliaDecoder10: (Decoder[Bam] @@ Magnolia) =
+      tag[Magnolia](deriveMagnoliaDecoder[Bam])
+    given magnoliaDecoder6: (Decoder[Baz] @@ Magnolia) =
+      tag[Magnolia](deriveMagnoliaDecoder[Baz])
+    given magnoliaDecoder7: (Decoder[Foo] @@ Magnolia) =
+      tag[Magnolia](deriveMagnoliaDecoder[Foo])
+    implicit private val decoderREcursiveAdtExample
+        : Decoder[RecursiveAdtExample] =
+      deriveMagnoliaDecoder[RecursiveAdtExample]
+    given magnoliaDecoder8: (Decoder[RecursiveAdtExample] @@ Magnolia) =
+      tag[Magnolia](decoderREcursiveAdtExample)
+    implicit private lazy val decoderRecursiveWithOptionExample
+        : Decoder[RecursiveWithOptionExample] =
+      deriveMagnoliaDecoder[RecursiveWithOptionExample]
+    given magnoliaDecoder9: (Decoder[RecursiveWithOptionExample] @@ Magnolia) =
+      tag[Magnolia](decoderRecursiveWithOptionExample)
 
-    implicit val enc2 = deriveEncoder[BaseAdtExample]
-    implicit val dec2 = deriveDecoder[BaseAdtExample]
+    given magnoliaDecoder5: (Decoder[Seq[Foo]] @@ Magnolia) =
+      tag[Magnolia](Decoder.decodeSeq(magnoliaDecoder7))
 
-    implicit val circeEncoder3 = tag[Circe](deriveEncoder[Box[Int]])
-    implicit val circeEncoder4 = tag[Circe](deriveEncoder[Qux[Int]])
-    implicit val circeEncoder6 = tag[Circe](deriveEncoder[Baz])
-    implicit val circeEncoder7 = tag[Circe](deriveEncoder[Foo])
-    private implicit val encoderREcursiveAdtExample: Encoder[RecursiveAdtExample] = deriveEncoder[RecursiveAdtExample]
-    implicit val circeEncoder8 = tag[Circe](encoderREcursiveAdtExample)
-    private implicit val encoderRecursiveWithOptionExample: Encoder[RecursiveWithOptionExample] = deriveEncoder[RecursiveWithOptionExample]
-    implicit val circeEncoder9 = tag[Circe](encoderRecursiveWithOptionExample)
-    implicit val circeEncoder1 = tag[Circe](deriveEncoder[AnyValInside])
-    implicit val circeEncoder5: Encoder[Seq[Foo]] @@ Circe = tag[Circe](Encoder.encodeSeq(circeEncoder7))
+  object semiautoCirceInstances:
 
-    implicit val circeDecoder3 = tag[Circe](deriveDecoder[Box[Int]])
-    implicit val circeDecoder4 = tag[Circe](deriveDecoder[Qux[Int]])
-    implicit val circeDecoder6 = tag[Circe](deriveDecoder[Baz])
-    implicit val circeDecoder7 = tag[Circe](deriveDecoder[Foo]: Decoder[Foo])
-    private implicit val decodeRecursiveAdtExample: Decoder[RecursiveAdtExample] = deriveDecoder[RecursiveAdtExample]
-    implicit val circeDecoder8 = tag[Circe](decodeRecursiveAdtExample)
-    private implicit val decodeRecursiveWithOptionExample: Decoder[RecursiveWithOptionExample] = deriveDecoder[RecursiveWithOptionExample]
-    implicit val circeDecoder9 = tag[Circe](decodeRecursiveWithOptionExample)
-    implicit val circeDecoder1 = tag[Circe](deriveDecoder[AnyValInside])
-    implicit val circeDecoder5 = tag[Circe](Decoder.decodeSeq(circeDecoder7))
-  }
+    import io.circe.generic.semiauto.*
 
-  import magnolia._
-  import circe._
+    given enc1: Encoder[Wub] = deriveEncoder[Wub]
+    given dec1: Decoder[Wub] = deriveDecoder[Wub]
+
+    given enc2: Encoder[BaseAdtExample] = deriveEncoder[BaseAdtExample]
+    given dec2: Decoder[BaseAdtExample] = deriveDecoder[BaseAdtExample]
+
+    given circeEncoder3: (Encoder[Box[Int]] @@ Circe) =
+      tag[Circe](deriveEncoder[Box[Int]])
+    given circeEncoder4: (Encoder[Qux[Int]] @@ Circe) =
+      tag[Circe](deriveEncoder[Qux[Int]])
+    given circeEncoder6: (Encoder[Baz] @@ Circe) =
+      tag[Circe](deriveEncoder[Baz])
+    given circeEncoder7: (Encoder[Foo] @@ Circe) =
+      tag[Circe](deriveEncoder[Foo])
+    implicit private val encoderREcursiveAdtExample
+        : Encoder[RecursiveAdtExample] = deriveEncoder[RecursiveAdtExample]
+    given circeEncoder8: (Encoder[RecursiveAdtExample] @@ Circe) =
+      tag[Circe](encoderREcursiveAdtExample)
+    implicit private val encoderRecursiveWithOptionExample
+        : Encoder[RecursiveWithOptionExample] =
+      deriveEncoder[RecursiveWithOptionExample]
+    given circeEncoder9: (Encoder[RecursiveWithOptionExample] @@ Circe) =
+      tag[Circe](encoderRecursiveWithOptionExample)
+
+    given circeEncoder5: (Encoder[Seq[Foo]] @@ Circe) =
+      tag[Circe](Encoder.encodeSeq(circeEncoder7))
+
+    given circeDecoder3: (Decoder[Box[Int]] @@ Circe) =
+      tag[Circe](deriveDecoder[Box[Int]])
+
+    given circeDecoder4: (Decoder[Qux[Int]] @@ Circe) =
+      tag[Circe](deriveDecoder[Qux[Int]])
+
+    given circeDecoder6: (Decoder[Baz] @@ Circe) =
+      tag[Circe](deriveDecoder[Baz])
+    given circeDecoder7: (Decoder[Foo] @@ Circe) =
+      tag[Circe](deriveDecoder[Foo]: Decoder[Foo])
+    implicit private val decodeRecursiveAdtExample
+        : Decoder[RecursiveAdtExample] = deriveDecoder[RecursiveAdtExample]
+    given circeDecoder8: (Decoder[RecursiveAdtExample] @@ Circe) =
+      tag[Circe](decodeRecursiveAdtExample)
+    implicit private val decodeRecursiveWithOptionExample
+        : Decoder[RecursiveWithOptionExample] =
+      deriveDecoder[RecursiveWithOptionExample]
+    given circeDecoder9: (Decoder[RecursiveWithOptionExample] @@ Circe) =
+      tag[Circe](decodeRecursiveWithOptionExample)
+
+    given circeDecoder5: (Decoder[Seq[Foo]] @@ Circe) =
+      tag[Circe](Decoder.decodeSeq(circeDecoder7))
+
+  import semiautoMagnoliaInstances.given
+
+  import semiautoCirceInstances.given
 
   checkLaws("Codec[Box[Int]]", CodecEquivalenceTests[Box[Int]].codecEquivalence)
   checkLaws("Codec[Qux[Int]]", CodecEquivalenceTests[Qux[Int]].codecEquivalence)
   checkLaws("Codec[Baz]", CodecEquivalenceTests[Baz].codecEquivalence)
   checkLaws("Codec[Foo]", CodecEquivalenceTests[Foo].codecEquivalence)
-  checkLaws("Codec[RecursiveAdtExample]", CodecEquivalenceTests[RecursiveAdtExample].codecEquivalence)
-  checkLaws("Codec[RecursiveWithOptionExample]", CodecEquivalenceTests[RecursiveWithOptionExample].codecEquivalence)
-  checkLaws("Codec[AnyValInside]", CodecEquivalenceTests[AnyValInside].codecEquivalence)
-  checkLaws("Codec[Seq[Foo]]", CodecEquivalenceTests[Seq[Foo]].codecEquivalence)
-}
+  checkLaws(
+    "Codec[RecursiveAdtExample]",
+    CodecEquivalenceTests[RecursiveAdtExample].codecEquivalence
+  )
+  checkLaws(
+    "Codec[RecursiveWithOptionExample]",
+    CodecEquivalenceTests[RecursiveWithOptionExample].codecEquivalence
+  )
 
+  checkLaws("Codec[Seq[Foo]]", CodecEquivalenceTests[Seq[Foo]].codecEquivalence)

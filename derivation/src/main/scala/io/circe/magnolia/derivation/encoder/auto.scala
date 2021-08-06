@@ -3,17 +3,12 @@ package io.circe.magnolia.derivation.encoder
 import io.circe.Encoder
 import io.circe.magnolia.MagnoliaEncoder
 import io.circe.magnolia.configured.Configuration
-import magnolia.{CaseClass, Magnolia, SealedTrait}
+import magnolia1.*
 
-object auto {
+import scala.deriving.Mirror
 
-  type Typeclass[T] = Encoder[T]
+object auto:
 
-  def combine[T](caseClass: CaseClass[Typeclass, T]): Typeclass[T] =
-    MagnoliaEncoder.combine(caseClass)(Configuration.default)
-
-  def dispatch[T](sealedTrait: SealedTrait[Typeclass, T]): Typeclass[T] =
-    MagnoliaEncoder.dispatch(sealedTrait)(Configuration.default)
-
-  implicit def magnoliaEncoder[T]: Typeclass[T] = macro Magnolia.gen[T]
-}
+  inline given autoencoder[T](using inline m: Mirror.Of[T]): Encoder[T] =
+    given Configuration = Configuration.default
+    MagnoliaEncoder.derived[T]

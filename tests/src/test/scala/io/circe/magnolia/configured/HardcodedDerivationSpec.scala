@@ -5,14 +5,14 @@ import io.circe.magnolia.MagnoliaEncoder
 import io.circe.magnolia.configured.HardcodedDerivationSpec.{User, UserType}
 import io.circe.parser.parse
 import io.circe.tests.CirceSuite
-import magnolia.{CaseClass, Magnolia, SealedTrait}
+import magnolia1.{CaseClass, SealedTrait}
+import scala.deriving.Mirror
 
 // An example of hardcoding a configuration. This means at when deriving Encoder/Decoder you no longer need to provide
 // a Configuration object
-class HardcodedDerivationSpec extends CirceSuite {
+class HardcodedDerivationSpec extends CirceSuite:
   "Hardcoded Encoder deriver" should "match the hardcoded configured behavior" in {
-    assert(UserType.encoder(User("John", "Doe")).asRight[Throwable] == parse(
-      """
+    assert(UserType.encoder(User("John", "Doe")).asRight[Throwable] == parse("""
         {
           "type": "user",
           "first_name": "John",
@@ -20,36 +20,24 @@ class HardcodedDerivationSpec extends CirceSuite {
         }
       """))
   }
-}
 
-object HardcodedDerivationSpec {
+object HardcodedDerivationSpec:
 
   sealed trait UserType
   final case class User(firstName: String, lastName: String) extends UserType
 
   final case class SuperUser(name: String) extends UserType
 
-  object UserType {
-    implicit val encoder: Encoder[UserType] = hardcodedConfiguration.deriveEncoder[UserType]
-  }
+  object UserType:
+    given encoder: Encoder[UserType] =
+      hardcodedConfiguration.deriveEncoder[UserType]
 
-  object hardcodedConfiguration {
-    val config: Configuration =
-      Configuration
-        .default
+  object hardcodedConfiguration:
+    given Configuration =
+      Configuration.default
         .withDiscriminator("type")
         .withSnakeCaseConstructorNames
         .withSnakeCaseMemberNames
 
-    type Typeclass[T] = Encoder[T]
-
-    def combine[T](caseClass: CaseClass[Typeclass, T]): Typeclass[T] =
-      MagnoliaEncoder.combine(caseClass)(config)
-
-    def dispatch[T](sealedTrait: SealedTrait[Typeclass, T]): Typeclass[T] =
-      MagnoliaEncoder.dispatch(sealedTrait)(config)
-
-    def deriveEncoder[T]: Typeclass[T] = macro Magnolia.gen[T]
-  }
-
-}
+    inline def deriveEncoder[T](using Mirror.Of[T]): Encoder[T] =
+      MagnoliaEncoder.derived[T]

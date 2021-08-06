@@ -3,102 +3,40 @@ import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 
 lazy val buildSettings = Seq(
   organization := "io.circe",
-  scalaVersion := "2.12.12",
-  crossScalaVersions := List("2.12.12", "2.13.4")
+  scalaVersion := "3.0.0"
 )
 
-lazy val magnoliaVersion = "0.17.0"
-lazy val circeVersion = "0.13.0"
-lazy val circeGenericExtrasVersion = "0.13.0"
-lazy val shapelessVersion = "2.3.3"
-lazy val scalatestVersion = "3.2.2"
-lazy val scalacheckVersion = "1.14.3"
+lazy val magnoliaVersion = "0.0.1-M4"
+lazy val circeVersion = "0.15.0-M1"
+lazy val shapelessVersion = "3.0.2"
+lazy val scalatestVersion = "3.2.9"
+lazy val scalacheckVersion = "1.15.4"
 
-lazy val compilerSettings = Seq(
-  scalacOptions ++= Seq(
-    "-deprecation",
-    "-encoding", "utf-8",
-    "-explaintypes",
-    "-feature",
-    "-language:existentials",
-    "-language:experimental.macros",
-    "-language:higherKinds",
-    "-language:implicitConversions",
-    "-unchecked",
-    "-Xcheckinit",
-    "-Xfatal-warnings",
-    "-Xlint:adapted-args",
-    "-Xlint:delayedinit-select",
-    "-Xlint:doc-detached",
-    "-Xlint:inaccessible",
-    "-Xlint:infer-any",
-    "-Xlint:missing-interpolator",
-    "-Xlint:nullary-override",
-    "-Xlint:nullary-unit",
-    "-Xlint:option-implicit",
-    "-Xlint:package-object-classes",
-    "-Xlint:poly-implicit-overload",
-    "-Xlint:private-shadow",
-    "-Xlint:stars-align",
-    "-Xlint:type-parameter-shadow",
-    "-Ywarn-dead-code",
-    "-Ywarn-numeric-widen",
-    "-Ywarn-value-discard",
-    "-Xlint:constant",
-    "-Ywarn-macros:after",
-    "-Ywarn-extra-implicit",
-    "-Ywarn-unused:implicits",
-    "-Ywarn-unused:imports",
-    "-Ywarn-unused:locals",
-    "-Ywarn-unused:params",
-    "-Ywarn-unused:patvars",
-    "-Ywarn-unused:privates"),
-  scalacOptions ++= {
-    CrossVersion.partialVersion(scalaVersion.value) match {
-      case Some((2, y)) if y == 12 => Seq(
-        "-Xfuture",
-        "-Xlint:by-name-right-associative",
-        "-Xlint:unsound-match",
-        "-Yno-adapted-args",
-        "-Ypartial-unification",
-        "-Ywarn-inaccessible",
-        "-Ywarn-infer-any",
-        "-Ywarn-nullary-override",
-        "-Ywarn-nullary-unit",
-      )
-      case Some((2, y)) if y == 13 => Seq("-Ymacro-annotations")
-      case _                       => Seq.empty[String]
-    }
-  },
-  scalacOptions in(Compile, console) --= Seq("-Ywarn-unused:imports", "-Xfatal-warnings")
-)
-
-lazy val allSettings = buildSettings ++ compilerSettings ++ publishSettings
+lazy val allSettings = buildSettings ++ publishSettings
 
 lazy val coreDependencies = libraryDependencies ++= Seq(
   "io.circe" %%% "circe-core" % circeVersion,
-  "com.propensive" %%% "magnolia" % magnoliaVersion,
-  "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+  "com.softwaremill.magnolia1_3" %% "magnolia" % "1.0.0-M4"
 )
 
 lazy val testDependencies = libraryDependencies ++= Seq(
-  "com.chuusai" %% "shapeless" % shapelessVersion,
   "io.circe" %%% "circe-parser" % circeVersion,
   "io.circe" %%% "circe-generic" % circeVersion,
-  "io.circe" %%% "circe-generic-extras" % circeGenericExtrasVersion,
   "io.circe" %%% "circe-testing" % circeVersion,
   "org.scalacheck" %%% "scalacheck" % scalacheckVersion,
-  "org.scalatest" %%% "scalatest" % scalatestVersion
+  "org.scalatest" %%% "scalatest" % scalatestVersion,
+  "org.scalatestplus" %% "scalacheck-1-15" % "3.2.9.0"
 )
 
-lazy val circeMagnolia = project.in(file("."))
+lazy val circeMagnolia = project
+  .in(file("."))
   .settings(name := "circe-magnolia")
   .settings(allSettings: _*)
   .settings(noPublishSettings: _*)
-  .aggregate(derivationJVM, derivationJS, testsJS, testsJVM)
-  .dependsOn(derivationJVM, derivationJS, testsJS, testsJVM)
+  .aggregate(derivation)
+  .dependsOn(derivation)
 
-lazy val derivation = crossProject(JSPlatform, JVMPlatform).crossType(CrossType.Pure)
+lazy val derivation = project
   .in(file("derivation"))
   .settings(
     description := "Magnolia-based derivation for Circe codecs",
@@ -108,10 +46,7 @@ lazy val derivation = crossProject(JSPlatform, JVMPlatform).crossType(CrossType.
   .settings(allSettings: _*)
   .settings(coreDependencies)
 
-lazy val derivationJVM = derivation.jvm
-lazy val derivationJS = derivation.js
-
-lazy val tests = crossProject(JSPlatform, JVMPlatform).crossType(CrossType.Pure)
+lazy val tests = project
   .in(file("tests"))
   .settings(
     description := "Circe-magnolia tests",
@@ -126,11 +61,7 @@ lazy val tests = crossProject(JSPlatform, JVMPlatform).crossType(CrossType.Pure)
     // Coverage disabled due to https://github.com/scoverage/scalac-scoverage-plugin/issues/269
     // coverageExcludedPackages :=".*"
   )
-  .jsConfigure(_.enablePlugins(ScalaJSBundlerPlugin))
   .dependsOn(derivation)
-
-lazy val testsJVM = tests.jvm
-lazy val testsJS = tests.js
 
 lazy val noPublishSettings = Seq(
   publish := {},
@@ -143,16 +74,18 @@ lazy val publishSettings = Seq(
   releaseCrossBuild := true,
   releasePublishArtifactsAction := PgpKeys.publishSigned.value,
   homepage := Some(url("https://github.com/circe/circe-magnolia")),
-  licenses := Seq("Apache 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
+  licenses := Seq(
+    "Apache 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")
+  ),
   publishMavenStyle := true,
-  publishArtifact in Test := false,
+  Test / publishArtifact := false,
   pomIncludeRepository := { _ => false },
   publishTo := {
     val nexus = "https://oss.sonatype.org/"
     if (isSnapshot.value)
-      Some("snapshots" at nexus + "content/repositories/snapshots")
+      Some("snapshots".at(nexus + "content/repositories/snapshots"))
     else
-      Some("releases" at nexus + "service/local/staging/deploy/maven2")
+      Some("releases".at(nexus + "service/local/staging/deploy/maven2"))
   },
   autoAPIMappings := true,
   apiURL := Some(url("https://vpavkin.github.io/circe-magnolia/api/")),
@@ -168,6 +101,11 @@ lazy val publishSettings = Seq(
         <id>vpavkin</id>
         <name>Vladimir Pavkin</name>
         <url>http://pavkin.ru</url>
+      </developer>
+      <developer>
+        <id>funfunfine</id>
+        <name>Anton Voytsishevskiy</name>
+        <url>https://t.me/funfunfine</url>
       </developer>
     </developers>
 )
@@ -189,4 +127,4 @@ lazy val sharedReleaseProcess = Seq(
   )
 )
 
-addCommandAlias("validate", ";compile;testsJVM/test;testsJS/test")
+addCommandAlias("validate", ";compile;tests/test")
