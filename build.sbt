@@ -78,7 +78,7 @@ lazy val publishSettings = Seq(
     "Apache 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")
   ),
   publishMavenStyle := true,
-  publishArtifact in Test := false,
+  Test / publishArtifact := false,
   pomIncludeRepository := { _ => false },
   publishTo := {
     val nexus = "https://oss.sonatype.org/"

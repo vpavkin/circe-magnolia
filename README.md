@@ -11,7 +11,10 @@ This library provides facilities to derive JSON codec instances for Circe using 
 
 ## Scala 3 limitations
 Currently, non-Mirror-able types are not supported. Full list of unsupported stuff can be found [here](https://dotty.epfl.ch/docs/reference/contextual/derivation.html#types-supporting-derives-clauses).
-Also, recursive types may not fully work either.
+
+Also, recursive types may not fully work either along with default values.
+
+Overriding codecs for subtypes of ADTs is not supported yet.
 
 ## Scala 2
 See the Scala 2 support [here at master branch](https://github.com/vpavkin/circe-magnolia). 

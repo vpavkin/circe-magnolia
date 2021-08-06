@@ -55,8 +55,7 @@ private[magnolia] object MagnoliaEncoder:
       origTypeNames.map(config.transformConstructorNames).distinct
     if transformed.length != origTypeNames.length then
       throw new DerivationError(
-        "Duplicate key detected after applying transformation function for " +
-          "sealed trait child classes"
+        "Duplicate key detected after applying transformation function for sealed trait child classes"
       )
 
     new Encoder[T]:

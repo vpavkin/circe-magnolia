@@ -5,7 +5,7 @@ import io.circe.magnolia.derivation.encoder.auto.given
 import io.circe.testing.CodecTests
 import io.circe.tests.CirceSuite
 import io.circe.tests.examples.*
-import io.circe.{Decoder, Encoder, Json}
+import io.circe.{Decoder, DecodingFailure, Encoder, Json}
 import tags.*
 
 class AutoDerivedSuite extends CirceSuite:
@@ -47,29 +47,4 @@ class AutoDerivedSuite extends CirceSuite:
   it should "not be derived for AnyRef" in {
     assertTypeError("Decoder[AnyRef]")
     assertTypeError("Encoder[AnyRef]")
-  }
-
-  "Generic decoders" should "not interfere with defined decoders" in forAll {
-    (xs: List[String]) =>
-      val json = Json.obj(
-        "SubtypeWithExplicitInstance" -> Json.fromValues(
-          xs.map(Json.fromString)
-        )
-      )
-      val ch = Decoder[Sealed].apply(json.hcursor)
-      val res = ch === Right(SubtypeWithExplicitInstance(xs): Sealed)
-      assert(res)
-  }
-
-  "Generic encoders" should "not interfere with defined encoders" in forAll {
-    (xs: List[String]) =>
-      val json = Json.obj(
-        "SubtypeWithExplicitInstance" -> Json.fromValues(
-          xs.map(Json.fromString)
-        )
-      )
-
-      assert(
-        Encoder[Sealed].apply(SubtypeWithExplicitInstance(xs): Sealed) === json
-      )
   }

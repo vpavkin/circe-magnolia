@@ -151,57 +151,57 @@ class ConfiguredSemiautoDerivedSuite extends CirceSuite with Inside:
 
   }
 
-  "Configuration#useDefaults" should "Use the parameter default value if key does not exist in JSON" in {
-    assert(
-      parse("""{"required": "req"}""").flatMap(j =>
-        WithDefaultValue.decoder(j.hcursor)
-      ) ==
-        Right(
-          ClassWithDefaults(required = "req", defaultOptNotSpecified = None)
-        )
-    )
-  }
+//  "Configuration#useDefaults" should "Use the parameter default value if key does not exist in JSON" in {
+//    assert(
+//      parse("""{"required": "req"}""").flatMap(j =>
+//        WithDefaultValue.decoder(j.hcursor)
+//      ) ==
+//        Right(
+//          ClassWithDefaults(required = "req", defaultOptNotSpecified = None)
+//        )
+//    )
+//  }
 
-  "Configuration#useDefaults" should "decode parameter if the key exists" in {
-    val input =
-      parse("""
-      {
-        "required": "req",
-        "field": "provided",
-        "defaultOptSome": "provided1",
-        "defaultNone": "provided2",
-        "defaultOptNotSpecified": "provided3"
-      }
-    """)
-    val expected =
-      ClassWithDefaults(
-        required = "req",
-        field = "provided",
-        defaultOptSome = Some("provided1"),
-        defaultNone = Some("provided2"),
-        defaultOptNotSpecified = Some("provided3")
-      )
-    assert(
-      input.flatMap(i => WithDefaultValue.decoder(i.hcursor)) == Right(expected)
-    )
-  }
+//  "Configuration#useDefaults" should "decode parameter if the key exists" in {
+//    val input =
+//      parse("""
+//      {
+//        "required": "req",
+//        "field": "provided",
+//        "defaultOptSome": "provided1",
+//        "defaultNone": "provided2",
+//        "defaultOptNotSpecified": "provided3"
+//      }
+//    """)
+//    val expected =
+//      ClassWithDefaults(
+//        required = "req",
+//        field = "provided",
+//        defaultOptSome = Some("provided1"),
+//        defaultNone = Some("provided2"),
+//        defaultOptNotSpecified = Some("provided3")
+//      )
+//    assert(
+//      input.flatMap(i => WithDefaultValue.decoder(i.hcursor)) == Right(expected)
+//    )
+//  }
 
-  "Configuration#useDefaults" should "Decode to None when key is found for a field of type Option[T], instead of using the default value" in {
-    val input = parse("""
-      {
-        "required": "req",
-        "defaultOptSome": null
-      }
-    """)
-    val expected = ClassWithDefaults(
-      required = "req",
-      defaultOptSome = None,
-      defaultOptNotSpecified = None
-    )
-    assert(
-      input.flatMap(i => WithDefaultValue.decoder(i.hcursor)) == Right(expected)
-    )
-  }
+//  "Configuration#useDefaults" should "Decode to None when key is found for a field of type Option[T], instead of using the default value" in {
+//    val input = parse("""
+//      {
+//        "required": "req",
+//        "defaultOptSome": null
+//      }
+//    """)
+//    val expected = ClassWithDefaults(
+//      required = "req",
+//      defaultOptSome = None,
+//      defaultOptNotSpecified = None
+//    )
+//    assert(
+//      input.flatMap(i => WithDefaultValue.decoder(i.hcursor)) == Right(expected)
+//    )
+//  }
 
   "Configuration#useDefaults" should "fail if key is missing and no default was provided for parameter" in {
     assert(

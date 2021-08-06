@@ -11,7 +11,10 @@ import scala.deriving.*
 private[magnolia] object MagnoliaDecoder:
   self =>
 
-  inline def derived[T](using c: Configuration, inline m: Mirror.Of[T]): Decoder[T] =
+  inline def derived[T](using
+      c: Configuration,
+      inline m: Mirror.Of[T]
+  ): Decoder[T] =
     val derivation = new Derivation[Decoder]:
       override def split[T](ctx: SealedTrait[Decoder, T]) = self.split[T](ctx)
       override def join[T](ctx: CaseClass[Decoder, T]): Decoder[T] =
@@ -51,6 +54,7 @@ private[magnolia] object MagnoliaDecoder:
               keyCursor.focus match
                 case Some(_) => p.typeclass.tryDecode(keyCursor)
                 case None =>
+                  println(p.default)
                   p.default.fold {
                     // Some decoders (in particular, the default Option[T] decoder) do special things when a key is missing,
                     // so we give them a chance to do their thing here.

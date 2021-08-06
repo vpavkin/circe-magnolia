@@ -156,24 +156,25 @@ package examples:
       )
     )
     given Eq[Sealed] = Eq.fromUniversalEquals
-
-  object SubtypeWithExplicitInstance:
+    
     given Arbitrary[SubtypeWithExplicitInstance] = Arbitrary(
       for strs <- Arbitrary.arbitrary[List[String]]
-      yield SubtypeWithExplicitInstance(strs)
+        yield SubtypeWithExplicitInstance(strs)
     )
-
+    
+    given Arbitrary[AnotherSubtype] = Arbitrary(
+      for i <- Arbitrary.arbitrary[Int]
+        yield AnotherSubtype(i)
+    )
     given Encoder[SubtypeWithExplicitInstance] =
       (a: SubtypeWithExplicitInstance) =>
         Json.fromValues(a.xs.map(Json.fromString))
+        
     given Decoder[SubtypeWithExplicitInstance] = (a: HCursor) =>
       a.as[List[String]].map(SubtypeWithExplicitInstance(_))
 
-  object AnotherSubtype:
-    given Arbitrary[AnotherSubtype] = Arbitrary(
-      for i <- Arbitrary.arbitrary[Int]
-      yield AnotherSubtype(i)
-    )
+   
+    
 
   sealed trait Organization
   final case class Public(name: String, taxCategory: String)
