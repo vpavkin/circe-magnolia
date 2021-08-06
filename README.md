@@ -1,4 +1,7 @@
 # circe-magnolia
+
+**Check out Scala 3 version [here](https://github.com/vpavkin/circe-magnolia/tree/scala3-version)**
+
 ### Codec derivation for [Circe](circe.io) using [Magnolia](http://magnolia.work/).
 
 [![Build Status](https://img.shields.io/travis/circe/circe-magnolia/master.svg)](https://travis-ci.org/circe/circe-magnolia)
