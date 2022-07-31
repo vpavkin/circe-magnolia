@@ -25,7 +25,7 @@ private[magnolia] object MagnoliaDecoder {
       throw new DerivationError("Duplicate key detected after applying transformation function for case class parameters")
     }
 
-    if (configuration.useDefaults) {
+    val nonStrictDecoder = if (configuration.useDefaults) {
       new Decoder[T] {
         override def apply(c: HCursor): Result[T] = {
           caseClass.constructEither { p =>
@@ -51,6 +51,26 @@ private[magnolia] object MagnoliaDecoder {
           }
         }.leftMap(_.head)
       }
+    }
+
+    if (configuration.strictDecoding) {
+      val expectedFields = paramJsonKeyLookup.values
+      val strictDecoder = nonStrictDecoder.validate { cursor: HCursor =>
+        val maybeUnexpectedErrors = for {
+          json <- cursor.focus
+          jsonKeys <- json.hcursor.keys
+          unexpected = jsonKeys.toSet -- expectedFields
+        } yield {
+          unexpected.toList map { unexpectedField =>
+            s"Unexpected field: [$unexpectedField]. Valid fields: ${expectedFields.mkString(",")}"
+          }
+        }
+
+        maybeUnexpectedErrors.getOrElse(List("Couldn't determine decoded fields."))
+      }
+      (c: HCursor) => strictDecoder(c)
+    } else {
+      nonStrictDecoder
     }
   }
 
