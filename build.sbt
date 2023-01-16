@@ -8,11 +8,12 @@ lazy val buildSettings = Seq(
 )
 
 lazy val magnoliaVersion = "0.17.0"
-lazy val circeVersion = "0.13.0"
-lazy val circeGenericExtrasVersion = "0.13.0"
-lazy val shapelessVersion = "2.3.3"
+lazy val circeVersion = "0.14.3"
+lazy val circeGenericExtrasVersion = "0.14.3"
+lazy val shapelessVersion = "2.3.10"
 lazy val scalatestVersion = "3.2.2"
 lazy val scalacheckVersion = "1.14.3"
+lazy val scalatestplusVersion = "3.2.2.0"
 
 lazy val compilerSettings = Seq(
   scalacOptions ++= Seq(
@@ -70,7 +71,7 @@ lazy val compilerSettings = Seq(
       case _                       => Seq.empty[String]
     }
   },
-  scalacOptions in(Compile, console) --= Seq("-Ywarn-unused:imports", "-Xfatal-warnings")
+  Compile / console / scalacOptions --= Seq("-Ywarn-unused:imports", "-Xfatal-warnings")
 )
 
 lazy val allSettings = buildSettings ++ compilerSettings ++ publishSettings
@@ -88,7 +89,8 @@ lazy val testDependencies = libraryDependencies ++= Seq(
   "io.circe" %%% "circe-generic-extras" % circeGenericExtrasVersion,
   "io.circe" %%% "circe-testing" % circeVersion,
   "org.scalacheck" %%% "scalacheck" % scalacheckVersion,
-  "org.scalatest" %%% "scalatest" % scalatestVersion
+  "org.scalatest" %%% "scalatest" % scalatestVersion,
+  "org.scalatestplus" %%% "scalacheck-1-14" % scalatestplusVersion
 )
 
 lazy val circeMagnolia = project.in(file("."))
@@ -145,7 +147,7 @@ lazy val publishSettings = Seq(
   homepage := Some(url("https://github.com/circe/circe-magnolia")),
   licenses := Seq("Apache 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
   publishMavenStyle := true,
-  publishArtifact in Test := false,
+  Test / publishArtifact := false,
   pomIncludeRepository := { _ => false },
   publishTo := {
     val nexus = "https://oss.sonatype.org/"
