@@ -2,11 +2,11 @@ package io.circe.magnolia
 
 import io.circe.magnolia.configured.Configuration
 import io.circe.{Encoder, Json}
-import magnolia._
+import magnolia1._
 
 private[magnolia] object MagnoliaEncoder {
 
-  private[magnolia] def combine[T](caseClass: CaseClass[Encoder, T])(implicit config: Configuration): Encoder[T] = {
+  private[magnolia] def join[T](caseClass: CaseClass[Encoder, T])(implicit config: Configuration): Encoder[T] = {
     val paramJsonKeyLookup = caseClass.parameters.map { p =>
       val jsonKeyAnnotation = p.annotations.collectFirst {
         case ann: JsonKey => ann
@@ -32,7 +32,7 @@ private[magnolia] object MagnoliaEncoder {
     }
   }
 
-  private[magnolia] def dispatch[T](
+  private[magnolia] def split[T](
     sealedTrait: SealedTrait[Encoder, T]
   )(implicit config: Configuration): Encoder[T] = {
     {
@@ -48,7 +48,7 @@ private[magnolia] object MagnoliaEncoder {
 
     new Encoder[T] {
       def apply(a: T): Json = {
-        sealedTrait.dispatch(a) { subtype =>
+        sealedTrait.split(a) { subtype =>
           val baseJson = subtype.typeclass(subtype.cast(a))
           val constructorName = config
             .transformConstructorNames(subtype.typeName.short)
