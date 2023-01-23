@@ -1,4 +1,7 @@
 # circe-magnolia
+
+**Check out Scala 3 version [here](https://github.com/vpavkin/circe-magnolia/tree/scala3-version)**
+
 ### Codec derivation for [Circe](circe.io) using [Magnolia](http://magnolia.work/).
 
 [![Build Status](https://img.shields.io/travis/circe/circe-magnolia/master.svg)](https://travis-ci.org/circe/circe-magnolia)
@@ -20,7 +23,7 @@ See [Testing](#testing) and [Status](#status) for more details.
 To play around with circe-magnolia, add it to your build:
 
 ```scala
-libraryDependencies += "io.circe" %%% "circe-magnolia-derivation" % "0.4.0"
+libraryDependencies += "io.circe" %%% "circe-magnolia-derivation" % "0.7.0"
 ```
 
 After that, as in `circe-generic`, you can use one of two derivation modes.

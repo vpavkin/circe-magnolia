@@ -1,5 +1,6 @@
 package io.circe.magnolia.configured
 
+import io.circe.DecodingFailure.Reason.MissingField
 import io.circe.magnolia.DerivationError
 import io.circe._
 import io.circe.magnolia.configured.ConfiguredSemiautoDerivedSuite.{
@@ -187,7 +188,7 @@ class ConfiguredSemiautoDerivedSuite extends CirceSuite with Inside {
 
   "Configuration#useDefaults" should "fail if key is missing and no default was provided for parameter" in {
     assert(parse("{}").flatMap(j => WithDefaultValue.decoder(j.hcursor)) == Left(
-        DecodingFailure("Attempt to decode value on failed cursor", List(CursorOp.DownField("required")))
+        DecodingFailure(MissingField, List(CursorOp.DownField("required")))
       )
     )
   }
