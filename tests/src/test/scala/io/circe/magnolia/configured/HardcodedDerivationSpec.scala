@@ -5,7 +5,7 @@ import io.circe.magnolia.MagnoliaEncoder
 import io.circe.magnolia.configured.HardcodedDerivationSpec.{User, UserType}
 import io.circe.parser.parse
 import io.circe.tests.CirceSuite
-import magnolia.{CaseClass, Magnolia, SealedTrait}
+import magnolia1.{CaseClass, Magnolia, SealedTrait}
 
 // An example of hardcoding a configuration. This means at when deriving Encoder/Decoder you no longer need to provide
 // a Configuration object
@@ -43,11 +43,11 @@ object HardcodedDerivationSpec {
 
     type Typeclass[T] = Encoder[T]
 
-    def combine[T](caseClass: CaseClass[Typeclass, T]): Typeclass[T] =
-      MagnoliaEncoder.combine(caseClass)(config)
+    def join[T](caseClass: CaseClass[Typeclass, T]): Typeclass[T] =
+      MagnoliaEncoder.join(caseClass)(config)
 
-    def dispatch[T](sealedTrait: SealedTrait[Typeclass, T]): Typeclass[T] =
-      MagnoliaEncoder.dispatch(sealedTrait)(config)
+    def split[T](sealedTrait: SealedTrait[Typeclass, T]): Typeclass[T] =
+      MagnoliaEncoder.split(sealedTrait)(config)
 
     def deriveEncoder[T]: Typeclass[T] = macro Magnolia.gen[T]
   }
