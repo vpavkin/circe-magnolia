@@ -13,7 +13,7 @@ lazy val circeGenericExtrasVersion = "0.14.3"
 lazy val shapelessVersion = "2.3.10"
 lazy val scalatestVersion = "3.2.2"
 lazy val scalacheckVersion = "1.14.3"
-lazy val scalatestplusVersion = "3.2.2.0"
+lazy val scalatestplusVersion = "3.2.11.0"
 
 lazy val compilerSettings = Seq(
   scalacOptions ++= Seq(
@@ -90,7 +90,7 @@ lazy val testDependencies = libraryDependencies ++= Seq(
   "io.circe" %%% "circe-testing" % circeVersion,
   "org.scalacheck" %%% "scalacheck" % scalacheckVersion,
   "org.scalatest" %%% "scalatest" % scalatestVersion,
-  "org.scalatestplus" %%% "scalacheck-1-14" % scalatestplusVersion
+  "org.scalatestplus" %%% "scalacheck-1-15" % scalatestplusVersion
 )
 
 lazy val circeMagnolia = project.in(file("."))
