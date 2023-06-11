@@ -4,7 +4,7 @@ import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 lazy val buildSettings = Seq(
   organization := "io.circe",
   scalaVersion := "2.12.12",
-  crossScalaVersions := List("2.12.12", "2.13.4")
+  crossScalaVersions := List("2.12.12", "2.13.11")
 )
 
 lazy val magnoliaVersion = "1.1.3"
