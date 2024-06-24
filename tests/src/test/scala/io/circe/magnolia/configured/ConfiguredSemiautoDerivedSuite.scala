@@ -3,12 +3,7 @@ package io.circe.magnolia.configured
 import io.circe.DecodingFailure.Reason.MissingField
 import io.circe.magnolia.DerivationError
 import io.circe._
-import io.circe.magnolia.configured.ConfiguredSemiautoDerivedSuite.{
-  DefaultConfig,
-  KebabCase,
-  SnakeCaseAndDiscriminator,
-  WithDefaultValue
-}
+import io.circe.magnolia.configured.ConfiguredSemiautoDerivedSuite.{DefaultConfig, KebabCase, Lenient, SnakeCaseAndDiscriminator, Strict, WithDefaultValue}
 import io.circe.tests.CirceSuite
 import io.circe.tests.examples.{Bar, ClassWithDefaults, ClassWithJsonKey, NonProfit, Organization, Public}
 import org.scalatest.Inside
@@ -193,6 +188,38 @@ class ConfiguredSemiautoDerivedSuite extends CirceSuite with Inside {
     )
   }
 
+  "Configuration#strictDecoding" should "Raise error when strict decoding enabled and extraneous key is found in JSON" in {
+    val input = parse("""
+      {
+        "NonProfit": {
+          "orgName": "RSPCA",
+          "extraneous": true
+        }
+      }
+    """)
+    inside(input.flatMap(i => Strict.decoder(i.hcursor))) {
+      case Left(e: DecodingFailure) => {
+        assert(e.message.contains("Unexpected field"))
+        assert(e.message.contains("extraneous"))
+        assert(e.message.contains("orgName"))
+      }
+      case x => fail(x.toString)
+    }
+  }
+
+  "Configuration#strictDecoding" should "Should not raise error when strict decoding is disabled and extraneous key is found in JSON" in {
+    val input = parse("""
+      {
+        "NonProfit": {
+          "orgName": "RSPCA",
+          "extraneous": true
+        }
+      }
+    """)
+    val expected = NonProfit("RSPCA")
+    assert(input.flatMap(i => Lenient.decoder(i.hcursor)) == Right(expected))
+  }
+
   "Encoder derivation" should "fail if transforming parameter names has collisions" in {
     implicit val config: Configuration = Configuration.default.copy(transformMemberNames = _ => "sameKey")
 
@@ -275,6 +302,20 @@ object ConfiguredSemiautoDerivedSuite {
   object KebabCase {
     implicit val configuration: Configuration =
       Configuration.default.withKebabCaseConstructorNames.withKebabCaseMemberNames
+
+    val encoder: Encoder[Organization] = deriveConfiguredMagnoliaEncoder[Organization]
+    val decoder: Decoder[Organization] = deriveConfiguredMagnoliaDecoder[Organization]
+  }
+
+  object Strict {
+    implicit val configuration: Configuration = Configuration.default.withStrictDecoding
+
+    val encoder: Encoder[Organization] = deriveConfiguredMagnoliaEncoder[Organization]
+    val decoder: Decoder[Organization] = deriveConfiguredMagnoliaDecoder[Organization]
+  }
+
+  object Lenient {
+    implicit val configuration: Configuration = Configuration.default
 
     val encoder: Encoder[Organization] = deriveConfiguredMagnoliaEncoder[Organization]
     val decoder: Decoder[Organization] = deriveConfiguredMagnoliaDecoder[Organization]

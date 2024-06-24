@@ -134,6 +134,7 @@ class ConfiguredAutoDerivedEquivalenceSuite extends CirceSuite {
   testWithConfiguration("with snake case configuration", Configuration.default.withSnakeCaseConstructorNames.withSnakeCaseMemberNames)
   testWithConfiguration("with useDefault = true", Configuration.default.copy(useDefaults = true))
   testWithConfiguration("with discriminator", Configuration.default.copy(discriminator = Some("type")))
+  testWithConfiguration("with strict", Configuration.default.copy(strictDecoding = true))
 
   "If a sealed trait subtype has explicit Encoder instance that doesn't encode to a JsonObject, the derived encoder" should
     s"wrap it with type constructor even when discriminator is specified by the configuration" in {

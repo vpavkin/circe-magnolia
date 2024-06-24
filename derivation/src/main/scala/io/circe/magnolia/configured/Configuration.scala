@@ -19,12 +19,15 @@ import java.util.regex.Pattern
   *                                  formatting or case changes.
   *                                  If there are collisions in transformed constructor names, an exception will be thrown
   *                                  during derivation (runtime)
+  * @param strictDecoding When true, raises a decoding error when there are any extraneous fields in the given JSON
+  *                       that aren't present in the case class.
   */
 final case class Configuration(
   transformMemberNames: String => String,
   transformConstructorNames: String => String,
   useDefaults: Boolean,
-  discriminator: Option[String]
+  discriminator: Option[String],
+  strictDecoding: Boolean = false
 ) {
   def withSnakeCaseMemberNames: Configuration = copy(
     transformMemberNames = Configuration.snakeCaseTransformation
@@ -44,6 +47,7 @@ final case class Configuration(
 
   def withDefaults: Configuration = copy(useDefaults = true)
   def withDiscriminator(discriminator: String): Configuration = copy(discriminator = Some(discriminator))
+  def withStrictDecoding: Configuration = copy(strictDecoding = true)
 }
 
 final object Configuration {
